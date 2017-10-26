@@ -12,15 +12,16 @@ public class GameLogic {
 	private final static int MINUSER = 1;
 	private final static int MAXUSER = 8;
 
-	private String state = "";
-	private String when = "";
+	private String state 	= "";
+	private String when 	= "";
 	private boolean wantnext = false;
 
 	private HashMap<Integer, Integer[]> chractorOfUserSize; // 참여 인원 숫자별 직업수
-	private HashMap<String, Integer> numberOfChractor; // 직업별 인원 배정
-	private HashMap<String, String> userVote; // 유저 투표
-	private HashMap<String, String> mafiaChoice; // 마피아가 선택한 인원
-	private String copChoice = "";
+	private HashMap<String, Integer> 	numberOfChractor; // 직업별 인원 배정
+	private HashMap<String, String> 	userVote; // 유저 투표
+	private HashMap<String, String> 	mafiaChoice; // 마피아가 선택한 인원
+	
+	private String copChoice 	= "";
 	private String doctorChoice = "";
 
 	private UserManager userManager;
@@ -44,8 +45,8 @@ public class GameLogic {
 	}
 
 	public boolean isInsizeUserNumber() {
-		if (userManager.size() >= MINUSER && userManager.size() <= MAXUSER)
-			return true;
+		int size = userManager.size();
+		if (size >= MINUSER && size <= MAXUSER) { return true; }
 		return false;
 	}
 
@@ -53,14 +54,14 @@ public class GameLogic {
 		Integer numberOfUsers = userManager.size();
 		Integer[] characterDivision = chractorOfUserSize.get(numberOfUsers);
 
-		int numberOfMafias = 0;
-		int numberOfCops = 0;
+		int numberOfMafias 	= 0;
+		int numberOfCops 	= 0;
 		int numberOfDoctors = 0;
-		int numberOfCivils = 0;
+		int numberOfCivils 	= 0;
 
 		int maxOfMafias = characterDivision[0];
-		int maxOfCops = characterDivision[1];
-		int maxOfDoctors = characterDivision[2];
+		int maxOfCops 	= characterDivision[1];
+		int maxOfDoctors= characterDivision[2];
 		int maxOfCivils = characterDivision[3];
 
 		for (int i = 0; i < numberOfUsers; i++) {
@@ -119,6 +120,7 @@ public class GameLogic {
 				}
 			}
 		}
+		
 		numberOfChractor.put("MAFIA", numberOfMafias);
 		numberOfChractor.put("COP", numberOfCops);
 		numberOfChractor.put("DOCTOR", numberOfDoctors);
@@ -131,18 +133,24 @@ public class GameLogic {
 	public void newVote() {
 		userVote.clear();
 		String[] aliveUsername = userManager.getAliveUserNames();
-		for (int i = 0; i < aliveUsername.length; i++)
+		int length = aliveUsername.length;
+		for (int i = 0; i < length; i++){
 			userVote.put(aliveUsername[i], "");
+		}
 
-		Logger.append("새로운 투표가 시작되었습니다 . 투표가능 (생존) 유저 " + aliveUsername.length + "명" + "\n");
+		Logger.append("새로운 투표가 시작되었습니다 . 투표가능 (생존) 유저 " + length + "명" + "\n");
 	}
 
 	public void newMafiaChoice() {
 		mafiaChoice.clear();
+		
 		String[] aliveUsername = userManager.getAliveUserNames();
-		for (int i = 0; i < aliveUsername.length; i++)
-			if (userManager.getUser(aliveUsername[i]).getCharacter().equals("MAFIA"))
+		int length = aliveUsername.length;
+		for (int i = 0; i < length; i++){
+			if (userManager.getUser(aliveUsername[i]).getCharacter().equals("MAFIA")){
 				mafiaChoice.put(aliveUsername[i], "");
+			}
+		}
 	}
 
 	public void updateVote(String name, String choice) {
@@ -162,9 +170,10 @@ public class GameLogic {
 	}
 
 	public boolean isAllUserVote() {
-		boolean result = true;
-		Set<String> set = userVote.keySet();
-		Iterator<String> iter = set.iterator();
+		boolean result 			= true;
+		Set<String> set 		= userVote.keySet();
+		Iterator<String> iter 	= set.iterator();
+		
 		Logger.append("--------------투표 중간결과 -----------------------\n");
 		while (iter.hasNext()) {
 			String name = iter.next();
@@ -182,14 +191,14 @@ public class GameLogic {
 
 	public boolean isAllChracterChoice() {
 
-		if (numberOfChractor.get("COP") != 0)
-			if (copChoice.equals(""))
-				return false;
-
-		if (numberOfChractor.get("DOCTOR") != 0)
-			if (doctorChoice.equals(""))
-				return false;
-
+		if (numberOfChractor.get("COP") != 0){
+			if (copChoice.equals("")){return false;}
+		}
+		
+		if (numberOfChractor.get("DOCTOR") != 0){
+			if (doctorChoice.equals("")){ return false;}
+		}
+		
 		Iterator iter = mafiaChoice.keySet().iterator();
 		while (iter.hasNext()) {
 			if (mafiaChoice.get(iter.next()).equals(""))
@@ -215,13 +224,14 @@ public class GameLogic {
 
 		/* 유저, 뽑혀진 숫자 */
 		while (iter.hasNext()) {
-			String name = iter.next();
-			String value = userVote.get(name);
+			String name	= iter.next();
+			String value= userVote.get(name);
 			if (votedUser.get(value) != null) {
 				int choice = votedUser.get(value);
 				votedUser.put(value, choice + 1);
-			} else
+			} else{
 				votedUser.put(value, 1);
+			}
 		}
 
 		/* 가장 많이 뽑혀진 저를 찾음 */
@@ -234,7 +244,7 @@ public class GameLogic {
 			Integer choice = votedUser.get(name);
 			Logger.append(name + choice + "\n");
 			if (choice > maxint) {
-				maxint = choice;
+				maxint 	= choice;
 				maxuser = name;
 			}
 		}
@@ -289,7 +299,6 @@ public class GameLogic {
 		String dieuserCharacter = userManager.getUser(dieduser).getCharacter();
 		int num = numberOfChractor.get(dieuserCharacter);
 		numberOfChractor.put(dieuserCharacter, num - 1);
-
 	}
 
 	public String isGameOver() {
@@ -297,15 +306,17 @@ public class GameLogic {
 		int numberOfCop = numberOfChractor.get("COP");
 		int numberOfDoctor = numberOfChractor.get("DOCTOR");
 		int numberOfCivil = numberOfChractor.get("CIVIL");
+		
 		Logger.append("---------------------중간 결과 -------------------\n");
-		Logger.append("마피아  " + numberOfMafia + "명 ," + "경찰 " + numberOfCop + "명, " + "의사 " + numberOfDoctor + "명 , "
-				+ "시민 " + numberOfCivil + "명 생존!!!\n");
+		Logger.append("마피아  " + numberOfMafia + "명 ," + "경찰 " + numberOfCop + "명, " + "의사 " + numberOfDoctor + "명 , " + "시민 " + numberOfCivil + "명 생존!!!\n");
 
-		if (numberOfMafia == 0)
+		if (numberOfMafia == 0){
 			return "MAFIALOSE";
+		}
 
-		if (numberOfMafia >= (numberOfCop + numberOfDoctor + numberOfCivil))
+		if (numberOfMafia >= (numberOfCop + numberOfDoctor + numberOfCivil)){
 			return "MAFIAWIN";
+		}
 
 		return "NOGAMEOVER";
 	}
@@ -316,7 +327,6 @@ public class GameLogic {
 		wantnext 	= false;
 		numberOfChractor.clear(); // 직업별 인원 배정
 		userManager.getUsers().clear();
-
 	}
 
 	public void endNight() {
