@@ -8,9 +8,14 @@ import com.cglee079.mafia.log.Logger;
 import com.cglee079.mafia.network.MyNetwork;
 
 public class UserManager {
-	Vector<UserInfo> userinfos = new Vector<>();
-	HashMap<String, MyNetwork> userNetworks = new HashMap<>();
+	Vector<UserInfo> userinfos;
+	HashMap<String, MyNetwork> userNetworks;
 
+	public UserManager(){
+		userinfos = new Vector<>();
+		userNetworks = new HashMap<>();
+	}
+	
 	public Vector<UserInfo> getUsers() {
 		return userinfos;
 	}
@@ -30,9 +35,11 @@ public class UserManager {
 	}
 
 	public UserInfo getUser(String username) {
-		for (int i = 0; i < userinfos.size(); i++) {
-			if (username.equals(userinfos.get(i).getName()))
+		int size =  userinfos.size();
+		for (int i = 0; i < size; i++) {
+			if (username.equals(userinfos.get(i).getName())){
 				return userinfos.get(i);
+			}
 		}
 		return null;
 	}
@@ -57,58 +64,72 @@ public class UserManager {
 	public boolean checkingName(String userName) {
 		for (int i = 0; i < userinfos.size(); i++) {
 			UserInfo u = userinfos.get(i);
-			if (userName.equals(u.getName()) == true)
+			if (userName.equals(u.getName())){
 				return false;
+			}
 		}
 		return true;
 	}
 
 	public boolean isAllUserReady() {
 		Boolean result = true;
-		for (int i = 0; i < userinfos.size(); i++) {
+		
+		int size = userinfos.size();
+		for (int i = 0; i < size; i++) {
 			UserInfo user = userinfos.get(i);
-			if (user.getState().equals("ready") == false)
+			if (!user.getState().equals("ready")){
 				result = false;
+			}
 		}
 		return result;
 	}
 
 	public boolean isAllUserPlay() {
 		Boolean result = true;
-		for (int i = 0; i < userinfos.size(); i++) {
+		
+		int size = userinfos.size();
+		for (int i = 0; i < size; i++) {
 			UserInfo user = userinfos.get(i);
-			if (user.getState().equals("play") == false)
+			if (!user.getState().equals("play")){
 				result = false;
+			}
 		}
 		return result;
 	}
 
 	public boolean isAllUserWantNext() {
 		Boolean result = true;
-		for (int i = 0; i < userinfos.size(); i++) {
+		
+		int size = userinfos.size();
+		for (int i = 0; i < size; i++) {
 			UserInfo user = userinfos.get(i);
-			if (user.isWantnext() == false && user.getState().equals("play"))
+			if (!user.isWantnext() && user.getState().equals("play")){
 				result = false;
+			}
 		}
 		return result;
 	}
 
 	public boolean isAllUserInSunny() {
 		Boolean result = true;
-		for (int i = 0; i < userinfos.size(); i++) {
+		
+		int size = userinfos.size();
+		for (int i = 0; i < size; i++) {
 			UserInfo user = userinfos.get(i);
-			if (user.getWhen().equals("sunny") == false && user.getState().equals("play"))
+			if (!user.getWhen().equals("sunny") && user.getState().equals("play")){
 				result = false;
+			}
 		}
 		return result;
 	}
 
 	public boolean isAllUserInNight() {
 		Boolean result = true;
-		for (int i = 0; i < userinfos.size(); i++) {
+		
+		int size = userinfos.size();
+		for (int i = 0; i < size; i++) {
 			UserInfo user = userinfos.get(i);
-
-			if (user.getWhen().equals("night") == false && user.getState().equals("play")) {
+			if (!user.getWhen().equals("night") && user.getState().equals("play")) {
 				Logger.i(user.getName() + "님은 WHEN :  " + user.getWhen() + "상태는 : " + user.getState() + "\n");
 				result = false;
 			}
@@ -120,27 +141,36 @@ public class UserManager {
 		ArrayList<String> usernames = new ArrayList<>();
 		int size = userinfos.size();
 		for (int i = 0; i < size; i++) {
-			if (userinfos.get(i).getState().equals("play"))
+			if (userinfos.get(i).getState().equals("play")){
 				usernames.add(userinfos.get(i).getName());
+			}
 		}
+		
 		String[] names = usernames.toArray((new String[usernames.size()]));
 		return names;
 	}
 
 	public ArrayList<String> getMafias() {
 		ArrayList<String> mafias = new ArrayList<>();
-		for (int i = 0; i < this.size(); i++) {
-			UserInfo userinfo = userinfos.get(i);
+		UserInfo userinfo = null;
+		int size = this.size();
+		
+		for (int i = 0; i < size; i++) {
+			userinfo = userinfos.get(i);
 			if (userinfo.getCharacter().equals("MAFIA") && userinfo.getState().equals("play"))
 				mafias.add(userinfo.getName());
 		}
+		
 		return mafias;
 	}
 
 	public ArrayList<String> getCops() {
 		ArrayList<String> cops = new ArrayList<>();
-		for (int i = 0; i < this.size(); i++) {
-			UserInfo userinfo = userinfos.get(i);
+		UserInfo userinfo = null;
+		int size = this.size();
+		
+		for (int i = 0; i < size; i++) {
+			userinfo = userinfos.get(i);
 			if (userinfo.getCharacter().equals("COP") && userinfo.getState().equals("play"))
 				cops.add(userinfo.getName());
 		}
@@ -149,30 +179,42 @@ public class UserManager {
 
 	public ArrayList<String> getDoctors() {
 		ArrayList<String> doctors = new ArrayList<>();
-		for (int i = 0; i < this.size(); i++) {
-			UserInfo userinfo = userinfos.get(i);
-			if (userinfo.getCharacter().equals("DOCTOR") && userinfo.getState().equals("play"))
+		UserInfo userinfo = null;
+		int size = this.size();
+		
+		for (int i = 0; i < size; i++) {
+			userinfo = userinfos.get(i);
+			if (userinfo.getCharacter().equals("DOCTOR") && userinfo.getState().equals("play")){
 				doctors.add(userinfo.getName());
+			}
 		}
 		return doctors;
 	}
 
 	public ArrayList<String> getCivils() {
 		ArrayList<String> civils = new ArrayList<>();
-		for (int i = 0; i < this.size(); i++) {
-			UserInfo userinfo = userinfos.get(i);
-			if (userinfo.getCharacter().equals("CIVIL") && userinfo.getState().equals("play"))
+		UserInfo userinfo = null;
+		int size = this.size();
+		
+		for (int i = 0; i < size; i++) {
+			userinfo = userinfos.get(i);
+			if (userinfo.getCharacter().equals("CIVIL") && userinfo.getState().equals("play")){
 				civils.add(userinfo.getName());
+			}
 		}
 		return civils;
 	}
 
 	public ArrayList<String> getAlive() {
 		ArrayList<String> alives = new ArrayList<>();
-		for (int i = 0; i < this.size(); i++) {
-			UserInfo userinfo = userinfos.get(i);
-			if (userinfo.getState().equals("play"))
+		UserInfo userinfo = null;
+		int size = this.size();
+		
+		for (int i = 0; i < size; i++) {
+			userinfo = userinfos.get(i);
+			if (userinfo.getState().equals("play")){
 				alives.add(userinfo.getName());
+			}
 		}
 		return alives;
 	}

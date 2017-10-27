@@ -17,7 +17,7 @@ public class Play {
 	private boolean wantnext = false;
 
 	private HashMap<Integer, Integer[]> chractorOfUserSize; // 참여 인원 숫자별 직업수
-	private HashMap<String, Integer> 	numberOfChractor; // 직업별 인원 배정
+	private HashMap<String, Integer> 	numOfChractor; // 직업별 인원 배정
 	private HashMap<String, String> 	userVote; // 유저 투표
 	private HashMap<String, String> 	mafiaChoice; // 마피아가 선택한 인원
 	
@@ -26,13 +26,11 @@ public class Play {
 
 	private UserManager userManager;
 
-	public Play(UserManager userManager) {
-		this.userManager = userManager;
-
-		chractorOfUserSize = new HashMap<>();
-		numberOfChractor = new HashMap<>();
-		userVote = new HashMap<>();
-		mafiaChoice = new HashMap<>();
+	public Play(){
+		chractorOfUserSize 	= new HashMap<>();
+		numOfChractor 		= new HashMap<>();
+		userVote			= new HashMap<>();
+		mafiaChoice 		= new HashMap<>();
 
 		chractorOfUserSize.put(1, new Integer[] { 1, 0, 0, 0 });
 		chractorOfUserSize.put(2, new Integer[] { 1, 1, 0, 0 });
@@ -42,6 +40,11 @@ public class Play {
 		chractorOfUserSize.put(6, new Integer[] { 2, 1, 1, 2 });
 		chractorOfUserSize.put(7, new Integer[] { 2, 1, 1, 3 });
 		chractorOfUserSize.put(8, new Integer[] { 3, 1, 1, 3 });
+	}
+	
+	public Play(UserManager userManager) {
+		this();
+		this.userManager = userManager;
 	}
 
 	public boolean isInsizeUserNum() {
@@ -54,10 +57,10 @@ public class Play {
 		Integer numberOfUsers = userManager.size();
 		Integer[] characterDivision = chractorOfUserSize.get(numberOfUsers);
 
-		int numberOfMafias 	= 0;
-		int numberOfCops 	= 0;
-		int numberOfDoctors = 0;
-		int numberOfCivils 	= 0;
+		int numOfMafias = 0;
+		int numOfCops 	= 0;
+		int numOfDoctors= 0;
+		int numOfCivils = 0;
 
 		int maxOfMafias = characterDivision[0];
 		int maxOfCops 	= characterDivision[1];
@@ -71,22 +74,22 @@ public class Play {
 			if (numberOfUsers == 4) {
 				if (user.getName().equals("left") || user.getName().equals("찬구")) {
 					user.setCharacter("MAFIA");
-					numberOfMafias++;
+					numOfMafias++;
 				}
 
 				else if (user.getName().equals("center")) {
 					user.setCharacter("COP");
-					numberOfCops++;
+					numOfCops++;
 				}
 
 				else if (user.getName().equals("right")) {
 					user.setCharacter("DOCTOR");
-					numberOfDoctors++;
+					numOfDoctors++;
 				}
 
 				else {
 					user.setCharacter("CIVIL");
-					numberOfCivils++;
+					numOfCivils++;
 				}
 			}
 
@@ -94,37 +97,37 @@ public class Play {
 			if (numberOfUsers != 4) {
 				while (true) {
 					int random = (int) (Math.random() * 4);
-					if (random == 0 && numberOfMafias < maxOfMafias) {
+					if (random == 0 && numOfMafias < maxOfMafias) {
 						user.setCharacter("MAFIA");
-						numberOfMafias++;
+						numOfMafias++;
 						break;
 					}
 
-					else if (random == 1 && numberOfCops < maxOfCops) {
+					else if (random == 1 && numOfCops < maxOfCops) {
 						user.setCharacter("COP");
-						numberOfCops++;
+						numOfCops++;
 						break;
 					}
 
-					else if (random == 2 && numberOfDoctors < maxOfDoctors) {
+					else if (random == 2 && numOfDoctors < maxOfDoctors) {
 						user.setCharacter("DOCTOR");
-						numberOfDoctors++;
+						numOfDoctors++;
 						break;
 					}
 
-					else if (random == 3 && numberOfCivils < maxOfCivils) {
+					else if (random == 3 && numOfCivils < maxOfCivils) {
 						user.setCharacter("CIVIL");
-						numberOfCivils++;
+						numOfCivils++;
 						break;
 					}
 				}
 			}
 		}
 		
-		numberOfChractor.put("MAFIA", numberOfMafias);
-		numberOfChractor.put("COP", numberOfCops);
-		numberOfChractor.put("DOCTOR", numberOfDoctors);
-		numberOfChractor.put("CIVIL", numberOfCivils);
+		numOfChractor.put("MAFIA", numOfMafias);
+		numOfChractor.put("COP", numOfCops);
+		numOfChractor.put("DOCTOR", numOfDoctors);
+		numOfChractor.put("CIVIL", numOfCivils);
 
 		return true;
 
@@ -190,11 +193,11 @@ public class Play {
 
 	public boolean isAllChracterChoice() {
 
-		if (numberOfChractor.get("COP") != 0){
+		if (numOfChractor.get("COP") != 0){
 			if (copChoice.equals("")){return false;}
 		}
 		
-		if (numberOfChractor.get("DOCTOR") != 0){
+		if (numOfChractor.get("DOCTOR") != 0){
 			if (doctorChoice.equals("")){ return false;}
 		}
 		
@@ -208,11 +211,11 @@ public class Play {
 	}
 
 	public boolean isAliveCop() {
-		return numberOfChractor.get("COP") != 0;
+		return numOfChractor.get("COP") != 0;
 	}
 
 	public boolean isAliveDoctor() {
-		return numberOfChractor.get("DOCTOR") != 0;
+		return numOfChractor.get("DOCTOR") != 0;
 	}
 
 	public String getDiedUserByVote() {
@@ -297,7 +300,7 @@ public class Play {
 	}
 
 	public int getNumberOfChracter(String character) {
-		return numberOfChractor.get(character);
+		return numOfChractor.get(character);
 	}
 
 	public void setDied(String dieUser) {
@@ -306,15 +309,15 @@ public class Play {
 
 		/* 직업별 유저 수 갱신 */
 		String dieuserCharacter = userManager.getUser(dieUser).getCharacter();
-		int num = numberOfChractor.get(dieuserCharacter);
-		numberOfChractor.put(dieuserCharacter, num - 1);
+		int num = numOfChractor.get(dieuserCharacter);
+		numOfChractor.put(dieuserCharacter, num - 1);
 	}
 
 	public String isGameOver() {
-		int numberOfMafia = numberOfChractor.get("MAFIA");
-		int numberOfCop = numberOfChractor.get("COP");
-		int numberOfDoctor = numberOfChractor.get("DOCTOR");
-		int numberOfCivil = numberOfChractor.get("CIVIL");
+		int numberOfMafia = numOfChractor.get("MAFIA");
+		int numberOfCop = numOfChractor.get("COP");
+		int numberOfDoctor = numOfChractor.get("DOCTOR");
+		int numberOfCivil = numOfChractor.get("CIVIL");
 		
 		Logger.i("---------------------중간 결과 -------------------\n");
 		Logger.i("마피아  " + numberOfMafia + "명 ," + "경찰 " + numberOfCop + "명, " + "의사 " + numberOfDoctor + "명 , " + "시민 " + numberOfCivil + "명 생존!!!\n");
@@ -334,7 +337,7 @@ public class Play {
 		state 		= "";
 		when 		= "";
 		wantnext 	= false;
-		numberOfChractor.clear(); // 직업별 인원 배정
+		numOfChractor.clear(); // 직업별 인원 배정
 		userManager.getUsers().clear();
 	}
 

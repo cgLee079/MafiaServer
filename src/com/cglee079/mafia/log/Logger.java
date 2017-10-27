@@ -3,7 +3,7 @@ package com.cglee079.mafia.log;
 import javax.swing.JTextArea;
 
 public class Logger {
-	private static JTextArea textArea=new JTextArea();
+	private static JTextArea textArea = new JTextArea();
 	
 	public static JTextArea getTextArea(){
 		return textArea;
