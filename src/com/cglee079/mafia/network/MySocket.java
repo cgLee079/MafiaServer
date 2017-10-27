@@ -11,14 +11,13 @@ import java.net.Socket;
 
 import com.cglee079.mafia.log.Logger;
 
-public class MySocket{
+public class MySocket {
 
 	private Socket socket;
 	private InputStream is;
 	private OutputStream os;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
-	
 
 	public MySocket(Socket socket) throws IOException {
 		this.socket = socket;
@@ -28,18 +27,15 @@ public class MySocket{
 		oos = new ObjectOutputStream(os);
 	}
 
-
-	public synchronized void  writeObject(Object obj) throws ClassNotFoundException, IOException, EOFException{  
-		oos.writeUnshared(obj);		
+	public synchronized void writeObject(Object obj) throws ClassNotFoundException, IOException, EOFException {
+		oos.writeUnshared(obj);
 		oos.reset();
 	}
 
-
-	public Object readObject() throws ClassNotFoundException, IOException,EOFException {		
+	public Object readObject() throws ClassNotFoundException, IOException, EOFException {
 		return ois.readUnshared();
-		
-	}
 
+	}
 
 	public void close() throws IOException {
 		os.close();
@@ -48,11 +44,9 @@ public class MySocket{
 		ois.close();
 		socket.close();
 	}
-	
-    public Socket getSocket() {
-        return socket;
-    }
 
-
+	public Socket getSocket() {
+		return socket;
+	}
 
 }
