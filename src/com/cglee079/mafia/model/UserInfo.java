@@ -1,4 +1,4 @@
-package com.example.changoo.mafia.model;
+package com.cglee079.mafia.model;
 
 import java.io.Serializable;
 

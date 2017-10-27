@@ -1,4 +1,4 @@
-package com.example.changoo.mafia.network;
+package com.cglee079.mafia.network;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 
-import com.example.changoo.mafia.log.Logger;
+import com.cglee079.mafia.log.Logger;
 
 public class MySocket{
 

@@ -1,12 +1,12 @@
-package com.example.changoo.mafia.logic;
+package com.cglee079.mafia.logic;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.example.changoo.mafia.log.Logger;
-import com.example.changoo.mafia.model.UserInfo;
-import com.example.changoo.mafia.model.UserManager;
+import com.cglee079.mafia.log.Logger;
+import com.cglee079.mafia.model.UserInfo;
+import com.cglee079.mafia.model.UserManager;
 
 public class GameLogic {
 	private final static int MINUSER = 1;

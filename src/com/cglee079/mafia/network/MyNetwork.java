@@ -1,21 +1,21 @@
-package com.example.changoo.mafia.network;
+package com.cglee079.mafia.network;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import com.example.changoo.mafia.command.ChatCommand;
-import com.example.changoo.mafia.command.Command;
-import com.example.changoo.mafia.command.GameoverCommand;
-import com.example.changoo.mafia.command.HiddenChatCommand;
-import com.example.changoo.mafia.command.LoginCommand;
-import com.example.changoo.mafia.command.PlayCommand;
-import com.example.changoo.mafia.command.WaitCommand;
-import com.example.changoo.mafia.log.Logger;
-import com.example.changoo.mafia.logic.GameLogic;
-import com.example.changoo.mafia.model.SocketData;
-import com.example.changoo.mafia.model.UserInfo;
-import com.example.changoo.mafia.model.UserManager;
+import com.cglee079.mafia.cmd.ChatCommand;
+import com.cglee079.mafia.cmd.Command;
+import com.cglee079.mafia.cmd.GameoverCommand;
+import com.cglee079.mafia.cmd.HiddenChatCommand;
+import com.cglee079.mafia.cmd.LoginCommand;
+import com.cglee079.mafia.cmd.PlayCommand;
+import com.cglee079.mafia.cmd.WaitCommand;
+import com.cglee079.mafia.log.Logger;
+import com.cglee079.mafia.logic.GameLogic;
+import com.cglee079.mafia.model.SocketData;
+import com.cglee079.mafia.model.UserInfo;
+import com.cglee079.mafia.model.UserManager;
 
 public class MyNetwork extends Thread {
 	private Thread receiveMsg;

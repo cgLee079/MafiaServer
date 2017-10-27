@@ -1,4 +1,4 @@
-package com.example.changoo.mafia.log;
+package com.cglee079.mafia.log;
 
 import javax.swing.JTextArea;
 

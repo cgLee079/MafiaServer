@@ -1,4 +1,4 @@
-package com.example.changoo.mafia.network;
+package com.cglee079.mafia.network;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -6,10 +6,10 @@ import java.net.Socket;
 
 import javax.swing.JTextArea;
 
-import com.example.changoo.mafia.log.Logger;
-import com.example.changoo.mafia.logic.GameLogic;
-import com.example.changoo.mafia.model.UserManager;
-import com.example.changoo.mafia.model.UserInfo;
+import com.cglee079.mafia.log.Logger;
+import com.cglee079.mafia.logic.GameLogic;
+import com.cglee079.mafia.model.UserInfo;
+import com.cglee079.mafia.model.UserManager;
 
 public class ClientConnector extends Thread {
 	private MySocket mySocket;

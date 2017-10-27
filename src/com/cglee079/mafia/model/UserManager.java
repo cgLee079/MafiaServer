@@ -1,11 +1,11 @@
-package com.example.changoo.mafia.model;
+package com.cglee079.mafia.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
-import com.example.changoo.mafia.log.Logger;
-import com.example.changoo.mafia.network.MyNetwork;
+import com.cglee079.mafia.log.Logger;
+import com.cglee079.mafia.network.MyNetwork;
 
 public class UserManager {
 	Vector<UserInfo> userinfos = new Vector<>();

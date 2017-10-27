@@ -1,4 +1,4 @@
-package com.example.changoo.mafia.command;
+package com.cglee079.mafia.cmd;
 
 public class LoginCommand {
 	public static final String REQUESTCONFIRMNAME = "/Login REQUESTCONFIRMNAME";

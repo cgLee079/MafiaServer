@@ -1,4 +1,4 @@
-package com.example.changoo.mafia.network;
+package com.cglee079.mafia.network;
 
 // Java Chatting Server
 
@@ -17,7 +17,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import com.example.changoo.mafia.log.Logger;
+import com.cglee079.mafia.log.Logger;
 
 public class ServerOpen extends JFrame {
 	private JPanel contentPane;

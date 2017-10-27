@@ -1,4 +1,4 @@
-package com.example.changoo.mafia.command;
+package com.cglee079.mafia.cmd;
 
 /**
  * Created by changoo on 2016-12-11.
