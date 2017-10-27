@@ -1,6 +1,6 @@
 package com.cglee079.mafia.cmd;
 
-public class WaitCommand {
+public class WaitCmd {
 	public static final String IMWAITACTIVITY = "/wait IMWAITIMWAITACTIVITY";
 	public static final String NOTICE = "/wait NOTICE";
 	public static final String CLEARUSER = "/wait CLEARUSER";

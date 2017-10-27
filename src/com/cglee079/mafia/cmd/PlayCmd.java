@@ -4,7 +4,7 @@ package com.cglee079.mafia.cmd;
  * Created by changoo on 2016-12-03.
  */
 
-public class PlayCommand {
+public class PlayCmd {
 	public static final String NOTICE="/play NOTICE";
 	public static final String IMPOTANTNOTICE="/play IMPORTANTNOTICE";
     public static final String IMSTARTGAME="/play IMSTARTGAME";

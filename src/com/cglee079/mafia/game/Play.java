@@ -1,4 +1,4 @@
-package com.cglee079.mafia.logic;
+package com.cglee079.mafia.game;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,7 +8,7 @@ import com.cglee079.mafia.log.Logger;
 import com.cglee079.mafia.model.UserInfo;
 import com.cglee079.mafia.model.UserManager;
 
-public class GameLogic {
+public class Play {
 	private final static int MINUSER = 1;
 	private final static int MAXUSER = 8;
 
@@ -26,7 +26,7 @@ public class GameLogic {
 
 	private UserManager userManager;
 
-	public GameLogic(UserManager userManager) {
+	public Play(UserManager userManager) {
 		this.userManager = userManager;
 
 		chractorOfUserSize = new HashMap<>();
@@ -183,7 +183,6 @@ public class GameLogic {
 				result = false;
 			} else
 				Logger.append(name + " 님은   " + userVote.get(name) + " 님께 투표하였습니다!" + "\n");
-
 		}
 
 		return result;
@@ -252,7 +251,7 @@ public class GameLogic {
 		return maxuser;
 	}
 
-	public String getMaxChoicedUserByMafia() {
+	public String getMaxMafiaChoice() {
 		HashMap<String, Integer> choicedUser = new HashMap<>();
 
 		Set<String> set = mafiaChoice.keySet();
@@ -291,12 +290,12 @@ public class GameLogic {
 		return numberOfChractor.get(character);
 	}
 
-	public void setDied(String dieduser) {
+	public void setDied(String dieUser) {
 		/* 가장 많이 투표된 유저는 사망 */
-		userManager.getUser(dieduser).setState("die");
+		userManager.getUser(dieUser).setState("die");
 
 		/* 직업별 유저 수 갱신 */
-		String dieuserCharacter = userManager.getUser(dieduser).getCharacter();
+		String dieuserCharacter = userManager.getUser(dieUser).getCharacter();
 		int num = numberOfChractor.get(dieuserCharacter);
 		numberOfChractor.put(dieuserCharacter, num - 1);
 	}
