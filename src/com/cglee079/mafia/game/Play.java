@@ -44,7 +44,7 @@ public class Play {
 		chractorOfUserSize.put(8, new Integer[] { 3, 1, 1, 3 });
 	}
 
-	public boolean isInsizeUserNumber() {
+	public boolean isInsizeUserNum() {
 		int size = userManager.size();
 		if (size >= MINUSER && size <= MAXUSER) { return true; }
 		return false;
@@ -130,7 +130,7 @@ public class Play {
 
 	}
 
-	public void newVote() {
+	public void initVote() {
 		userVote.clear();
 		String[] aliveUsername = userManager.getAliveUserNames();
 		int length = aliveUsername.length;
@@ -138,10 +138,10 @@ public class Play {
 			userVote.put(aliveUsername[i], "");
 		}
 
-		Logger.append("새로운 투표가 시작되었습니다 . 투표가능 (생존) 유저 " + length + "명" + "\n");
+		Logger.i("새로운 투표가 시작되었습니다 . 투표가능 (생존) 유저 " + length + "명" + "\n");
 	}
 
-	public void newMafiaChoice() {
+	public void initMafiaChoice() {
 		mafiaChoice.clear();
 		
 		String[] aliveUsername = userManager.getAliveUserNames();
@@ -174,15 +174,15 @@ public class Play {
 		Set<String> set 		= userVote.keySet();
 		Iterator<String> iter 	= set.iterator();
 		
-		Logger.append("--------------투표 중간결과 -----------------------\n");
+		Logger.i("--------------투표 중간결과 -----------------------\n");
 		while (iter.hasNext()) {
 			String name = iter.next();
 
 			if (userVote.get(name).equals("")) {
-				Logger.append(name + " 님은   " + "아직 투표를 하지 않았습니다!" + "\n");
+				Logger.i(name + " 님은   " + "아직 투표를 하지 않았습니다!" + "\n");
 				result = false;
 			} else
-				Logger.append(name + " 님은   " + userVote.get(name) + " 님께 투표하였습니다!" + "\n");
+				Logger.i(name + " 님은   " + userVote.get(name) + " 님께 투표하였습니다!" + "\n");
 		}
 
 		return result;
@@ -225,6 +225,7 @@ public class Play {
 		while (iter.hasNext()) {
 			String name	= iter.next();
 			String value= userVote.get(name);
+			
 			if (votedUser.get(value) != null) {
 				int choice = votedUser.get(value);
 				votedUser.put(value, choice + 1);
@@ -241,7 +242,7 @@ public class Play {
 		while (iter2.hasNext()) {
 			String name = iter2.next();
 			Integer choice = votedUser.get(name);
-			Logger.append(name + choice + "\n");
+			Logger.i(name + choice + "\n");
 			if (choice > maxint) {
 				maxint 	= choice;
 				maxuser = name;
@@ -276,7 +277,7 @@ public class Play {
 		while (iter2.hasNext()) {
 			String name = iter2.next();
 			Integer choice = choicedUser.get(name);
-			Logger.append(name + choice + "\n");
+			Logger.i(name + choice + "\n");
 			if (choice > maxint) {
 				maxint = choice;
 				maxuser = name;
@@ -306,8 +307,8 @@ public class Play {
 		int numberOfDoctor = numberOfChractor.get("DOCTOR");
 		int numberOfCivil = numberOfChractor.get("CIVIL");
 		
-		Logger.append("---------------------중간 결과 -------------------\n");
-		Logger.append("마피아  " + numberOfMafia + "명 ," + "경찰 " + numberOfCop + "명, " + "의사 " + numberOfDoctor + "명 , " + "시민 " + numberOfCivil + "명 생존!!!\n");
+		Logger.i("---------------------중간 결과 -------------------\n");
+		Logger.i("마피아  " + numberOfMafia + "명 ," + "경찰 " + numberOfCop + "명, " + "의사 " + numberOfDoctor + "명 , " + "시민 " + numberOfCivil + "명 생존!!!\n");
 
 		if (numberOfMafia == 0){
 			return "MAFIALOSE";

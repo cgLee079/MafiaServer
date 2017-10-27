@@ -109,7 +109,7 @@ public class UserManager {
 			UserInfo user = userinfos.get(i);
 
 			if (user.getWhen().equals("night") == false && user.getState().equals("play")) {
-				Logger.append(user.getName() + "님은 WHEN :  " + user.getWhen() + "상태는 : " + user.getState() + "\n");
+				Logger.i(user.getName() + "님은 WHEN :  " + user.getWhen() + "상태는 : " + user.getState() + "\n");
 				result = false;
 			}
 		}

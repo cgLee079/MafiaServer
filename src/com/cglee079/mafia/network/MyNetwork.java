@@ -24,10 +24,10 @@ public class MyNetwork extends Thread {
 	private String myName;
 	private Play play;
 
-	public MyNetwork(MySocket mySocket, UserManager users, Play gameLogic) {
-		this.mySocket = mySocket;
-		this.userManager = users;
-		this.play = gameLogic;
+	public MyNetwork(MySocket mySocket, UserManager users, Play play) {
+		this.mySocket 	= mySocket;
+		this.userManager= users;
+		this.play 		= play;
 	}
 
 	public void stopRecvmsg() {
@@ -81,9 +81,9 @@ public class MyNetwork extends Thread {
 	public void sendMsg(String sndCmd, String sndNm, Object sndObj) {
 		try {
 			mySocket.writeObject(new SocketData(sndCmd, sndNm, sndObj));
-			Logger.append("SEND  "+sndCmd + ">>>>> to. " +myName +"\n");	
+			Logger.i("SEND  "+sndCmd + ">>>>> to. " +myName +"\n");	
 		} catch (IOException | ClassNotFoundException e) {
-			Logger.append(sndCmd + ": " + "To." + myName.toString() + "메시지 송신 에러 발생" + e.getMessage() + "\n");
+			Logger.i(sndCmd + ": " + "To." + myName + "메시지 송신 에러 발생" + e.getMessage() + "\n");
 		} 
 	}
 
@@ -93,29 +93,28 @@ public class MyNetwork extends Thread {
 		public void run() {
 			while (Thread.currentThread() == rcvMsgThd) {
 				try {
-
 					SocketData socketData = (SocketData) mySocket.readObject();
 
 					String rcvCmd = socketData.getCommand();
 					String rcvNm = socketData.getName();
 					Object rcvObj = socketData.getObject();
 					
-					Logger.append("RECV " + rcvCmd + "  <<<<  By. " + rcvNm + "\n");
-					Logger.append("\n");
+					Logger.i("RECV " + rcvCmd + "  <<<<  By. " + rcvNm + "\n");
+					Logger.i("\n");
 
 					rcvMsgExcute(rcvCmd, rcvNm, rcvObj);
 
 				} catch (IOException | ClassNotFoundException e) {
 					try {
 						
-						Logger.append(e.getMessage() + "\n");
+						Logger.i(e.getMessage() + "\n");
 						mySocket.close();
 						userManager.removeUser(myName);
 						
 						broadcast(Cmd.USERUPDATE, "server", userManager.getUsers());
 						
-						Logger.append(userManager.size() + " : 현재 벡터에 담겨진 사용자 수\n");
-						Logger.append("사용자 접속 끊어짐 자원 반납\n");
+						Logger.i(userManager.size() + " : 현재 벡터에 담겨진 사용자 수\n");
+						Logger.i("사용자 접속 끊어짐 자원 반납\n");
 						
 						return;
 
@@ -139,12 +138,12 @@ public class MyNetwork extends Thread {
 
 			/* 동일 이름 확인, 접속가능 */
 			if (userManager.checkingName(rcvNm) == true) {
-				Logger.append("동일 이름 확인되지 않음, 접속 가능!\n");
+				Logger.i("동일 이름 확인되지 않음, 접속 가능!\n");
 				sendMsg(LoginCmd.CONFIRMNAME, rcvNm, true);
 				myName = rcvNm;
 				userManager.addUser(rcvNm);
 				userManager.addUserNetwork(rcvNm, MyNetwork.this);
-				Logger.append("유저 추가, 접속 가능!\n");
+				Logger.i("유저 추가, 접속 가능!\n");
 				sendMsg(LoginCmd.GOWAITROOM, rcvNm, true);
 
 			}
@@ -152,7 +151,7 @@ public class MyNetwork extends Thread {
 			/* 동일 이름 확인, 접속 불가 */
 			else {
 				sendMsg(LoginCmd.CONFIRMNAME, rcvNm, false);
-				Logger.append("동일 이름 확인, 접속 불가!\n");
+				Logger.i("동일 이름 확인, 접속 불가!\n");
 			}
 			break;
 
@@ -180,14 +179,13 @@ public class MyNetwork extends Thread {
 				play.setState("wait");
 
 			/* 게임 상태가 레디이고, 유저 인원 수가 가능한 인원인지 확인 */
-			if (play.getState().equals("ready") && play.isInsizeUserNumber()) {
+			if (play.getState().equals("ready") && play.isInsizeUserNum()) {
 
 				/* 카운트 다운을 시작함 */
 				new Thread() {
 					public void run() {
 						int count = 5;
-						while (count > 0 && play.getState().equals("ready") 
-								&& play.isInsizeUserNumber() == true) {
+						while (count > 0 && play.getState().equals("ready") && play.isInsizeUserNum()) {
 							count--;
 							broadcast(WaitCmd.NOTICE, "", "Count..." + count);
 							try {
@@ -199,12 +197,12 @@ public class MyNetwork extends Thread {
 
 						/* 카운트 다운이 정상적으로 끝날경우, 게임을 시작함 */
 						if (count == 0) {
-							Logger.append("---- GAME START-------\n");
+							Logger.i("---- GAME START-------\n");
 							broadcast(WaitCmd.NOTICE, "", "게임 스타트!!!!");
 
 							/* 유저들에게 직업을 부여함 */
 							if (play.updateCharacter())
-								Logger.append("---- Character update-------\n");
+								Logger.i("---- Character update-------\n");
 
 							/* 요저 정보 갱신을 요청함 */
 							broadcast(Cmd.USERUPDATE, "", userManager.getUsers());
@@ -226,10 +224,8 @@ public class MyNetwork extends Thread {
 			userinfo = userManager.getUser(rcvNm);
 			userinfo.setState((String) rcvObj);
 
-			if (userManager.isAllUserPlay())
-				play.setState("play");
-			else
-				play.setState("ready");
+			if (userManager.isAllUserPlay()){ play.setState("play"); }
+			else { play.setState("ready"); }
 
 			/* 모든 유저가 게임 을 시작했다면, 직업별 직업 공지 */
 			if (play.getState().equals("play")) {
@@ -257,7 +253,7 @@ public class MyNetwork extends Thread {
 			userinfo.setWantnext(false);
 		
 			for (int i = 0; i < userManager.size(); i++) {
-				Logger.append("WHEN " + userManager.getUser(i).getName() + userManager.getUser(i).getWhen() + "\n");
+				Logger.i("WHEN " + userManager.getUser(i).getName() + userManager.getUser(i).getWhen() + "\n");
 			}
 
 			/* 모든 유저가 낮에 있음을 확인 */
@@ -268,7 +264,7 @@ public class MyNetwork extends Thread {
 			if (play.getWhen().equals("sunny") && play.getState().equals("play")) {
 				broadcast(Cmd.USERUPDATE, "", userManager.getUsers());
 				
-				Logger.append("TIMER START " + rcvNm + "\n");
+				Logger.i("TIMER START " + rcvNm + "\n");
 				sndMsg_ToTargets(userManager.getAlive(), PlayCmd.NOTICE, "server", "아침이 밝았습니다");
 				new Thread() {
 					public void run() {
@@ -292,7 +288,7 @@ public class MyNetwork extends Thread {
 							sndMsg_ToTargets(userManager.getAlive(), PlayCmd.STARTVOTE, "server", "");
 
 							/* 새로운 투표 시작 */
-							play.newVote();
+							play.initVote();
 						}
 					}
 				}.start();
@@ -328,6 +324,7 @@ public class MyNetwork extends Thread {
 					public void run() {
 						sndMsg_ToTargets(userManager.getAlive(), PlayCmd.IMPOTANTNOTICE, "server", "5초후 투표를 시작합니다");
 						int count = 5;
+						
 						while (count > 0) {
 							count--;
 							sndMsg_ToTargets(userManager.getAlive(), PlayCmd.NOTICE, "server", "투표까지    " + count);
@@ -338,15 +335,13 @@ public class MyNetwork extends Thread {
 							}
 						}
 
-						if (count == 0) {
-							sndMsg_ToTargets(userManager.getAlive(), PlayCmd.IMPOTANTNOTICE, "server", "투표 중입니다..");
+						sndMsg_ToTargets(userManager.getAlive(), PlayCmd.IMPOTANTNOTICE, "server", "투표 중입니다..");
 
-							/* 모든 사용자에게 투표 시작을 요청함 */
-							sndMsg_ToTargets(userManager.getAlive(), PlayCmd.STARTVOTE, "server", "");
+						/* 모든 사용자에게 투표 시작을 요청함 */
+						sndMsg_ToTargets(userManager.getAlive(), PlayCmd.STARTVOTE, "server", "");
 
-							/* 새로운 투표 시작 */
-							play.newVote();
-						}
+						/* 새로운 투표 시작 */
+						play.initVote();
 					}
 				}.start();
 			}
@@ -378,7 +373,7 @@ public class MyNetwork extends Thread {
 				/* 게임 종료 조건 확인 */
 				String gameover = play.isGameOver();
 				if (!gameover.equals("NOGAMEOVER")) {
-					Logger.append("--------------------게임 종료 -----------------\n");
+					Logger.i("--------------------게임 종료 -----------------\n");
 					
 					broadcast(Cmd.USERUPDATE, "server", userManager.getUsers());
 					broadcast(PlayCmd.GAMEOVER, "server", gameover);
@@ -406,15 +401,13 @@ public class MyNetwork extends Thread {
 							}
 						}
 
-						if (count == 0) {
-							sndMsg_ToTargets(userManager.getAlive(), PlayCmd.IMPOTANTNOTICE, "server", "밤이왔습니다..");
+						sndMsg_ToTargets(userManager.getAlive(), PlayCmd.IMPOTANTNOTICE, "server", "밤이왔습니다..");
 
-							/* 모든 사용자에게 밤으로 가기를 요청함 */
-							sndMsg_ToTargets(userManager.getAlive(), PlayCmd.GONIGHT, "server", "");
+						/* 모든 사용자에게 밤으로 가기를 요청함 */
+						sndMsg_ToTargets(userManager.getAlive(), PlayCmd.GONIGHT, "server", "");
 
-							/* 마피아들의 선택을 초기화시킴 */
-							play.newMafiaChoice();
-						}
+						/* 마피아들의 선택을 초기화시킴 */
+						play.initMafiaChoice();
 					}
 				}.start();
 
@@ -427,7 +420,7 @@ public class MyNetwork extends Thread {
 		
 			if (userManager.isAllUserInNight()) {
 				broadcast(Cmd.USERUPDATE, "server", userManager.getUsers());
-				Logger.append("--------------모든 유저가 밤에 있습니다----------- \n");
+				Logger.i("--------------모든 유저가 밤에 있습니다----------- \n");
 				play.setWhen("night");
 			} else {
 				play.setWhen("sunny");
@@ -466,15 +459,15 @@ public class MyNetwork extends Thread {
 					doctorChoice = play.getDoctorChoice();
 				}
 
-				Logger.append("---------------각 직업들의 선택 입니다 -------------------\n");
-				Logger.append("마피아들은 " + mafiasChoice + "  선택하였습니다 " + "\n");
-				Logger.append("경찰은" + copChoice + "  선택하였습니다 " + "\n");
-				Logger.append("의사는" + doctorChoice + "  선택하였습니다 " + "\n");
+				Logger.i("---------------각 직업들의 선택 입니다 -------------------\n");
+				Logger.i("마피아들은 " + mafiasChoice + "  선택하였습니다 " + "\n");
+				Logger.i("경찰은" + copChoice + "  선택하였습니다 " + "\n");
+				Logger.i("의사는" + doctorChoice + "  선택하였습니다 " + "\n");
 
 				if (mafiasChoice != null){
 					/* 마피아가 고른 유저와 , 의사가 고른 유저가 같은 경우, 아무도죽지 않음 */
 					if (mafiasChoice.equals(doctorChoice)) {
-						Logger.append("의사는 마피아로부터 " + doctorChoice + "를 구하였습니다" + "\n");
+						Logger.i("의사는 마피아로부터 " + doctorChoice + "를 구하였습니다" + "\n");
 						sndMsg_ToTargets(userManager.getAlive(), PlayCmd.IMPOTANTNOTICE, "server", "지난 밤 마피아에 의해, " + "아무도 사망하지 않았습니다");
 					} else { 	/* 마피아가 고른 유저와 , 의사고 고른 유저가 다른 경우, 마피아가 고른 인원 사망 */
 						/* 사망자 갱신, 통보 */
@@ -495,7 +488,7 @@ public class MyNetwork extends Thread {
 				/* 게임 종료 조건 확인 */
 				String gameover = play.isGameOver();
 				if (!gameover.equals("NOGAMEOVER")) {
-					Logger.append("--------------------게임 종료 -----------------\n");
+					Logger.i("--------------------게임 종료 -----------------\n");
 					broadcast(PlayCmd.GAMEOVER, "server", gameover);
 					play.gameOver();
 					break;

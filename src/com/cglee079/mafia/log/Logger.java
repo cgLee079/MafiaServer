@@ -9,7 +9,7 @@ public class Logger {
 		return textArea;
 	}
 	
-	public static void append(String msg){
+	public static void i(String msg){
 		textArea.append(msg);
 		textArea.setCaretPosition(textArea.getText().length());
 		

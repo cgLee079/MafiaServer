@@ -15,9 +15,16 @@ public class ClientConnector extends Thread {
 	private MySocket mySocket;
 	private Socket soc; // 연결소켓
 	private ServerSocket serversocket;
-	private UserManager userManager = new UserManager(); // 연결된 사용자를 저장할 벡터
-	private Play play = new Play(userManager);
+	private UserManager userManager; // 연결된 사용자를 저장할 벡터
+	private Play play;
+	
+	public ClientConnector(){
+		userManager = new UserManager();
+		play		= new Play(userManager);
+	}
+	
 	public ClientConnector(ServerSocket socket) {
+		this();
 		this.serversocket = socket;
 	}
 
@@ -25,10 +32,10 @@ public class ClientConnector extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				Logger.append("\n");
-				Logger.append("---------------User waiting----------------\n");
+				Logger.i("\n");
+				Logger.i("---------------User waiting----------------\n");
 				soc = serversocket.accept();
-				Logger.append(">>>> User Connect!!\n");
+				Logger.i(">>>> User Connect!!\n");
 				this.mySocket = new MySocket(soc);
 				new MyNetwork(mySocket, userManager, play).start();
 			} catch (IOException e) {
