@@ -217,69 +217,78 @@ public class Play {
 
 	public String getDiedUserByVote() {
 		HashMap<String, Integer> votedUser = new HashMap<>();
-
+		String name	= null;
+		String voted= null;
+		String maxUser = null;
+		int maxCnt = 0;	
+		int cnt = 0;
+		
 		Set<String> set = userVote.keySet();
 		Iterator<String> iter = set.iterator();
-
+		
 		/* 유저, 뽑혀진 숫자 */
 		while (iter.hasNext()) {
-			String name	= iter.next();
-			String value= userVote.get(name);
+			name	= iter.next();
+			voted	= userVote.get(name);
 			
-			if (votedUser.get(value) != null) {
-				int choice = votedUser.get(value);
-				votedUser.put(value, choice + 1);
+			if (votedUser.get(voted) != null) {
+				cnt = votedUser.get(voted);
+				votedUser.put(voted, cnt + 1);
 			} else{
-				votedUser.put(value, 1);
+				votedUser.put(voted, 1);
 			}
 		}
 
 		/* 가장 많이 뽑혀진 저를 찾음 */
 		Set<String> set2 = votedUser.keySet();
 		Iterator<String> iter2 = set2.iterator();
-		int maxint = 0;
-		String maxuser = null;
+		
 		while (iter2.hasNext()) {
-			String name = iter2.next();
-			Integer choice = votedUser.get(name);
-			Logger.i(name + choice + "\n");
-			if (choice > maxint) {
-				maxint 	= choice;
-				maxuser = name;
+			name = iter2.next();
+			cnt = votedUser.get(name);
+			Logger.i(name + " :   " + cnt + "\n");
+			if (cnt > maxCnt) {
+				maxCnt 	= cnt;
+				maxUser = name;
 			}
 		}
 
-		return maxuser;
+		return maxUser;
 	}
 
 	public String getMaxMafiaChoice() {
-		HashMap<String, Integer> choicedUser = new HashMap<>();
-
+		HashMap<String, Integer> choicedUsers = new HashMap<>();
+		String name;
+		String choiced;
+		String maxuser = null;
+		int maxint = 0;
+		int cnt = 0;
+		
 		Set<String> set = mafiaChoice.keySet();
 		Iterator<String> iter = set.iterator();
 
 		/* 유저, 뽑혀진 숫자 */
 		while (iter.hasNext()) {
-			String name = iter.next();
-			String value = mafiaChoice.get(name);
-			if (choicedUser.get(value) != null) {
-				int choice = choicedUser.get(value);
-				choicedUser.put(value, choice + 1);
-			} else
-				choicedUser.put(value, 1);
+			name = iter.next();
+			choiced = mafiaChoice.get(name);
+			if (choicedUsers.get(choiced) != null) {
+				cnt = choicedUsers.get(choiced);
+				choicedUsers.put(choiced, cnt + 1);
+			} else {
+				choicedUsers.put(choiced, 1);
+			}
 		}
 
 		/* 가장 많이 뽑혀진 저를 찾음 */
-		Set<String> set2 = choicedUser.keySet();
+		Set<String> set2 = choicedUsers.keySet();
 		Iterator<String> iter2 = set2.iterator();
-		int maxint = 0;
-		String maxuser = null;
+		
 		while (iter2.hasNext()) {
-			String name = iter2.next();
-			Integer choice = choicedUser.get(name);
-			Logger.i(name + choice + "\n");
-			if (choice > maxint) {
-				maxint = choice;
+			name = iter2.next();
+			cnt = choicedUsers.get(name);
+			Logger.i(name + cnt + "\n");
+			if (cnt > maxint) {
+				maxint = cnt;
 				maxuser = name;
 			}
 		}
