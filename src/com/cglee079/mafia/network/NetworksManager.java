@@ -1,8 +1,6 @@
-package com.cglee079.mafia.model;
+package com.cglee079.mafia.network;
 
 import org.json.JSONObject;
-
-import com.cglee079.mafia.network.MyNetwork;
 
 public class NetworksManager {
 

@@ -1,4 +1,4 @@
-package com.cglee079.mafia.network;
+package com.cglee079.mafia.view;
 
 // Java Chatting Server
 
@@ -18,8 +18,9 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import com.cglee079.mafia.log.Logger;
+import com.cglee079.mafia.network.ClientConnector;
 
-public class ServerOpen extends JFrame {
+public class MainFrame extends JFrame {
 	private JPanel contentPane;
 	private JTextField textField; // 사용할 PORT번호 입력
 	private JButton Start; // 서버를 실행시킨 버튼
@@ -30,11 +31,11 @@ public class ServerOpen extends JFrame {
 
 
 	public static void main(String[] args) {
-		ServerOpen frame = new ServerOpen();
+		MainFrame frame = new MainFrame();
 		frame.setVisible(true);
 	}
 
-	public ServerOpen() {
+	public MainFrame() {
 		init();
 
 	}

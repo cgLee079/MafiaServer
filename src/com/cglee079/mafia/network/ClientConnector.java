@@ -9,7 +9,6 @@ import javax.swing.JTextArea;
 import com.cglee079.mafia.game.Play;
 import com.cglee079.mafia.log.Logger;
 import com.cglee079.mafia.model.User;
-import com.cglee079.mafia.model.NetworksManager;
 
 public class ClientConnector extends Thread {
 	private MySocket mySocket;

@@ -15,7 +15,6 @@ import com.cglee079.mafia.cmd.PlayCmd;
 import com.cglee079.mafia.cmd.WaitCmd;
 import com.cglee079.mafia.game.Play;
 import com.cglee079.mafia.log.Logger;
-import com.cglee079.mafia.model.NetworksManager;
 import com.cglee079.mafia.model.User;
 import com.cglee079.mafia.util.C;
 

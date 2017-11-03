@@ -8,8 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cglee079.mafia.log.Logger;
-import com.cglee079.mafia.model.NetworksManager;
 import com.cglee079.mafia.model.User;
+import com.cglee079.mafia.network.NetworksManager;
 import com.cglee079.mafia.util.C;
 
 public class Play {
