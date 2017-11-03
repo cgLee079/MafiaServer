@@ -313,7 +313,7 @@ public class Play {
 		return doctorChoice;
 	}
 
-	public int getNumberOfChracter(String character) {
+	public int getNumberOfChracter(int character) {
 		return numOfChractor.get(character);
 	}
 

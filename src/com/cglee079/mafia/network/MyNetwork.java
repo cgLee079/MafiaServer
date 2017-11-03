@@ -21,13 +21,13 @@ import com.cglee079.mafia.util.C;
 public class MyNetwork extends Thread {
 	private Thread rcvMsgThd;
 	private MySocket mySocket;
-	private NetworksManager networksManager;
+	private NetworksManager networkManager;
 	private String myName;
 	private Play play;
 
 	public MyNetwork(MySocket mySocket, NetworksManager userNetManager, Play play) {
 		this.mySocket 			= mySocket;
-		this.networksManager	= userNetManager;
+		this.networkManager	= userNetManager;
 		this.play 				= play;
 	}
 
@@ -47,7 +47,7 @@ public class MyNetwork extends Thread {
 	}
 
 	public void broadcast(String sndCmd, String sndNm, Object sndMsg) {
-			JSONObject networks = networksManager.getUserNetworks();
+			JSONObject networks = networkManager.getUserNetworks();
 			MyNetwork network = null;
 			
 			Iterator<String> iter = networks.keys();
@@ -63,13 +63,13 @@ public class MyNetwork extends Thread {
 		MyNetwork network 	= null;
 		for (int i = 0; i < size; i++) {
 			username = tgUserNms.getString(i);
-			network = networksManager.getUserNetwork(username);
+			network = networkManager.getUserNetwork(username);
 			network.sendMsg(sndCmd, sndNm, sndMsg);
 		}
 	}
 
 	public void sndMsg_ToTarget(String tgUserNm, String sndCmd, String sndNm, Object sndMsg) {
-		MyNetwork network = networksManager.getUserNetwork(tgUserNm);
+		MyNetwork network = networkManager.getUserNetwork(tgUserNm);
 		network.sendMsg(sndCmd, sndNm, sndMsg);
 	}
 	
@@ -110,7 +110,7 @@ public class MyNetwork extends Thread {
 						Logger.i(e.getMessage() + "\n");
 						mySocket.close();
 						
-						networksManager.removeUserNetwork(myName);
+						networkManager.removeUserNetwork(myName);
 						
 						broadcast(Cmd.USERUPDATE, "server", play.getUsersStr());
 						
@@ -139,13 +139,13 @@ public class MyNetwork extends Thread {
 		//// * 이름 확인 요청 */
 		case LoginCmd.REQUESTCONFIRMNAME:
 			/* 동일 이름 확인, 접속가능 */
-			if (networksManager.checkingName(rcvNm)) {
+			if (networkManager.checkingName(rcvNm)) {
 				Logger.i("동일 이름 확인되지 않음, 접속 가능!\n");
 				sendMsg(LoginCmd.CONFIRMNAME, rcvNm, true);
 				myName = rcvNm;
 				
 				play.addUser(myName);
-				networksManager.addUserNetwork(myName, MyNetwork.this);
+				networkManager.addUserNetwork(myName, MyNetwork.this);
 				
 				Logger.i("유저 추가, 접속 가능!\n");
 				
@@ -238,10 +238,10 @@ public class MyNetwork extends Thread {
 				
 				sndMsg_ToTargets(play.getAliveUserNms(), PlayCmd.NOTICE, "", "게임이 시작 되었습니다");
 				sndMsg_ToTargets(play.getAliveUserNms(), PlayCmd.IMPOTANTNOTICE, "",
-						"마피아 " + play.getNumberOfChracter("MAFIA") + "명, " + "경찰 "
-								+ play.getNumberOfChracter("COP") + "명 , " + "의사 "
-								+ play.getNumberOfChracter("DOCTOR") + "명, " + "시민 "
-								+ play.getNumberOfChracter("CIVIL") + "명 입니다.");
+						"마피아 " + play.getNumberOfChracter(C.CHARACTOR_MAFIA) + "명, " 
+								+ "경찰 " + play.getNumberOfChracter(C.CHARACTOR_COP) + "명 , " 
+								+ "의사 " + play.getNumberOfChracter(C.CHARACTOR_DOCTOR) + "명, "
+								+ "시민 " + play.getNumberOfChracter(C.CHARACTOR_CIVIL) + "명 입니다.");
 
 				sndMsg_ToTargets(play.getUserNmsByCharacter(C.CHARACTOR_MAFIA), PlayCmd.IMPOTANTNOTICE, "server", "당신은 마피아 입니다.\n사람을 죽이십시오.");
 				sndMsg_ToTargets(play.getUserNmsByCharacter(C.CHARACTOR_COP), PlayCmd.IMPOTANTNOTICE, "server", "당신은 경찰 입니다.\n마피아를 찾아주세요.");
@@ -255,7 +255,8 @@ public class MyNetwork extends Thread {
 		case PlayCmd.IMINSUNNY:
 			play.setUserInfo(rcvNm, C.WHEN, C.WHEN_SUNNY);
 			play.setUserInfo(rcvNm, C.ISWANTNEXT, C.ISWANTNEXT_FALSE);
-		
+			broadcast(Cmd.USERUPDATE, "", play.getUsersStr());
+			
 //			for (int i = 0; i < play.size(); i++) {
 //				Logger.i("WHEN " + play.getUser(i).getName() + play.getUser(i).getWhen() + "\n");
 //			}
@@ -266,12 +267,11 @@ public class MyNetwork extends Thread {
 				play.setWantnext(C.GAME_ISWANTNEXT_FALSE);
 			} else { 
 				play.setWhen(C.GAME_WHEN_NULL);
-				play.setWhen(C.GAME_ISWANTNEXT_NULL);
+				play.setWantnext(C.GAME_ISWANTNEXT_NULL);
 			}
 
 			/* 낮 기간 타이머를 시작함 */
 			if ((play.getWhen() == C.GAME_WHEN_SUNNY ) && (play.getState() == C.GAME_WHEN_NIGHT)) {
-				broadcast(Cmd.USERUPDATE, "", play.getUsersStr());
 				
 				Logger.i("TIMER START " + rcvNm + "\n");
 				
@@ -279,7 +279,7 @@ public class MyNetwork extends Thread {
 				
 				new Thread() {
 					public void run() {
-						Integer timer = 360;
+						int timer = 360;
 						while ((timer > 0) && (play.getWhen() == C.GAME_WHEN_SUNNY) && (play.getWantnext() == C.GAME_ISWANTNEXT_FALSE)) {
 							timer--;
 							sndMsg_ToTargets(play.getAliveUserNms(), PlayCmd.TIMER, "server", timer + "");
