@@ -6,13 +6,11 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.net.Socket;
 
-import com.cglee079.mafia.log.Logger;
+import org.json.JSONObject;
 
 public class MySocket {
-
 	private Socket socket;
 	private InputStream is;
 	private OutputStream os;
@@ -27,13 +25,13 @@ public class MySocket {
 		oos = new ObjectOutputStream(os);
 	}
 
-	public synchronized void writeObject(Object obj) throws ClassNotFoundException, IOException, EOFException {
-		oos.writeUnshared(obj);
+	public synchronized void writeJSON(JSONObject data) throws ClassNotFoundException, IOException, EOFException {
+		oos.writeUTF(data.toString());
 		oos.reset();
 	}
 
-	public Object readObject() throws ClassNotFoundException, IOException, EOFException {
-		return ois.readUnshared();
+	public JSONObject readJSON() throws ClassNotFoundException, IOException, EOFException {
+		return new org.json.JSONObject(ois.readUTF());
 
 	}
 

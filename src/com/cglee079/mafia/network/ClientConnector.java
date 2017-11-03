@@ -8,19 +8,19 @@ import javax.swing.JTextArea;
 
 import com.cglee079.mafia.game.Play;
 import com.cglee079.mafia.log.Logger;
-import com.cglee079.mafia.model.UserInfo;
-import com.cglee079.mafia.model.UserManager;
+import com.cglee079.mafia.model.User;
+import com.cglee079.mafia.model.NetworksManager;
 
 public class ClientConnector extends Thread {
 	private MySocket mySocket;
 	private Socket soc; // 연결소켓
 	private ServerSocket serversocket;
-	private UserManager userManager; // 연결된 사용자를 저장할 벡터
+	private NetworksManager networksManager; // 연결된 사용자를 저장할 벡터
 	private Play play;
 	
 	public ClientConnector(){
-		userManager = new UserManager();
-		play		= new Play(userManager);
+		networksManager = new NetworksManager();
+		play		= new Play(networksManager);
 	}
 	
 	public ClientConnector(ServerSocket socket) {
@@ -37,7 +37,7 @@ public class ClientConnector extends Thread {
 				soc = serversocket.accept();
 				Logger.i(">>>> User Connect!!\n");
 				this.mySocket = new MySocket(soc);
-				new MyNetwork(mySocket, userManager, play).start();
+				new MyNetwork(mySocket, networksManager, play).start();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

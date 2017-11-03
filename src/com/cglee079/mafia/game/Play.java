@@ -4,27 +4,33 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.cglee079.mafia.log.Logger;
-import com.cglee079.mafia.model.UserInfo;
-import com.cglee079.mafia.model.UserManager;
+import com.cglee079.mafia.model.NetworksManager;
+import com.cglee079.mafia.model.User;
+import com.cglee079.mafia.util.C;
 
 public class Play {
+	JSONObject users;
+	
 	private final static int MINUSER = 1;
 	private final static int MAXUSER = 8;
 
-	private String state 	= "";
-	private String when 	= "";
-	private boolean wantnext = false;
+	private int state;
+	private int when;
+	private int wantnext;
 
 	private HashMap<Integer, Integer[]> chractorOfUserSize; // 참여 인원 숫자별 직업수
-	private HashMap<String, Integer> 	numOfChractor; // 직업별 인원 배정
+	private HashMap<Integer, Integer> 	numOfChractor; // 직업별 인원 배정
 	private HashMap<String, String> 	userVote; // 유저 투표
-	private HashMap<String, String> 	mafiaChoice; // 마피아가 선택한 인원
 	
+	private HashMap<String, String> 	mafiaChoice; // 마피아가 선택한 인원
 	private String copChoice 	= "";
 	private String doctorChoice = "";
 
-	private UserManager userManager;
+	private NetworksManager userManager;
 
 	public Play(){
 		chractorOfUserSize 	= new HashMap<>();
@@ -42,20 +48,44 @@ public class Play {
 		chractorOfUserSize.put(8, new Integer[] { 3, 1, 1, 3 });
 	}
 	
-	public Play(UserManager userManager) {
+	public Play(NetworksManager userManager) {
 		this();
 		this.userManager = userManager;
 	}
+	
+	public int getState() {
+		return state;
+	}
+
+	public void setState(int state) {
+		this.state = state;
+	}
+
+	public int getWhen() {
+		return when;
+	}
+
+	public void setWhen(int when) {
+		this.when = when;
+	}
+
+	public int getWantnext() {
+		return wantnext;
+	}
+
+	public void setWantnext(int wantnext) {
+		this.wantnext = wantnext;
+	}
 
 	public boolean isInsizeUserNum() {
-		int size = userManager.size();
+		int size = users.length();
 		if (size >= MINUSER && size <= MAXUSER) { return true; }
 		return false;
 	}
 
 	public boolean updateCharacter() {
-		Integer numberOfUsers = userManager.size();
-		Integer[] characterDivision = chractorOfUserSize.get(numberOfUsers);
+		int length = users.length();
+		Integer[] characterDivision = chractorOfUserSize.get(length);
 
 		int numOfMafias = 0;
 		int numOfCops 	= 0;
@@ -67,67 +97,41 @@ public class Play {
 		int maxOfDoctors= characterDivision[2];
 		int maxOfCivils = characterDivision[3];
 
-		for (int i = 0; i < numberOfUsers; i++) {
-			UserInfo user = userManager.getUser(i);
-
-			/* 시연용 인원배정 */
-			if (numberOfUsers == 4) {
-				if (user.getName().equals("left") || user.getName().equals("찬구")) {
-					user.setCharacter("MAFIA");
+		Iterator<String> iter = users.keys();
+		while(iter.hasNext()){
+			String username = users.getString(iter.next());
+			while (true) {
+				int random = (int) (Math.random() * 4);
+				if (random == 0 && numOfMafias < maxOfMafias) {
+					setUserInfo(username, C.CHARACTER, C.CHARACTOR_MAFIA);
 					numOfMafias++;
+					break;
 				}
 
-				else if (user.getName().equals("center")) {
-					user.setCharacter("COP");
+				else if (random == 1 && numOfCops < maxOfCops) {
+					setUserInfo(username, C.CHARACTER, C.CHARACTOR_COP);
 					numOfCops++;
+					break;
 				}
 
-				else if (user.getName().equals("right")) {
-					user.setCharacter("DOCTOR");
+				else if (random == 2 && numOfDoctors < maxOfDoctors) {
+					setUserInfo(username, C.CHARACTER, C.CHARACTOR_DOCTOR);
 					numOfDoctors++;
+					break;
 				}
 
-				else {
-					user.setCharacter("CIVIL");
+				else if (random == 3 && numOfCivils < maxOfCivils) {
+					setUserInfo(username, C.CHARACTER, C.CHARACTOR_CIVIL);
 					numOfCivils++;
-				}
-			}
-
-			/* 실제 게임 인원 배정 */
-			if (numberOfUsers != 4) {
-				while (true) {
-					int random = (int) (Math.random() * 4);
-					if (random == 0 && numOfMafias < maxOfMafias) {
-						user.setCharacter("MAFIA");
-						numOfMafias++;
-						break;
-					}
-
-					else if (random == 1 && numOfCops < maxOfCops) {
-						user.setCharacter("COP");
-						numOfCops++;
-						break;
-					}
-
-					else if (random == 2 && numOfDoctors < maxOfDoctors) {
-						user.setCharacter("DOCTOR");
-						numOfDoctors++;
-						break;
-					}
-
-					else if (random == 3 && numOfCivils < maxOfCivils) {
-						user.setCharacter("CIVIL");
-						numOfCivils++;
-						break;
-					}
+					break;
 				}
 			}
 		}
 		
-		numOfChractor.put("MAFIA", numOfMafias);
-		numOfChractor.put("COP", numOfCops);
-		numOfChractor.put("DOCTOR", numOfDoctors);
-		numOfChractor.put("CIVIL", numOfCivils);
+		numOfChractor.put(C.CHARACTOR_MAFIA, numOfMafias);
+		numOfChractor.put(C.CHARACTOR_COP, numOfCops);
+		numOfChractor.put(C.CHARACTOR_DOCTOR, numOfDoctors);
+		numOfChractor.put(C.CHARACTOR_CIVIL, numOfCivils);
 
 		return true;
 
@@ -135,10 +139,11 @@ public class Play {
 
 	public void initVote() {
 		userVote.clear();
-		String[] aliveUsername = userManager.getAliveUserNames();
-		int length = aliveUsername.length;
+		JSONArray aliveUserNms = this.getAliveUserNms();
+		int length = aliveUserNms.length();
+		
 		for (int i = 0; i < length; i++){
-			userVote.put(aliveUsername[i], "");
+			userVote.put(aliveUserNms.getString(i), "");
 		}
 
 		Logger.i("새로운 투표가 시작되었습니다 . 투표가능 (생존) 유저 " + length + "명" + "\n");
@@ -147,11 +152,14 @@ public class Play {
 	public void initMafiaChoice() {
 		mafiaChoice.clear();
 		
-		String[] aliveUsername = userManager.getAliveUserNames();
-		int length = aliveUsername.length;
+		JSONArray aliveUserNms = this.getAliveUserNms();
+		
+		int length = aliveUserNms.length();
+		String username = null;
 		for (int i = 0; i < length; i++){
-			if (userManager.getUser(aliveUsername[i]).getCharacter().equals("MAFIA")){
-				mafiaChoice.put(aliveUsername[i], "");
+			username = aliveUserNms.getString(i);
+			if (getUserInfo(username, C.CHARACTER) == C.CHARACTOR_MAFIA){
+				mafiaChoice.put(username, "");
 			}
 		}
 	}
@@ -160,15 +168,15 @@ public class Play {
 		userVote.put(name, choice);
 	}
 
-	public void updateMafiaChoice(String name, String choice) {
+	public void updateMafiaSelect(String name, String choice) {
 		mafiaChoice.put(name, choice);
 	}
 
-	public void updateCopChoice(String name, String choice) {
+	public void updateCopSelect(String name, String choice) {
 		copChoice = choice;
 	}
 
-	public void updateDoctorChoice(String name, String choice) {
+	public void updateDoctorSelect(String name, String choice) {
 		doctorChoice = choice;
 	}
 
@@ -179,19 +187,20 @@ public class Play {
 		
 		Logger.i("--------------투표 중간결과 -----------------------\n");
 		while (iter.hasNext()) {
-			String name = iter.next();
+			String username = iter.next();
 
-			if (userVote.get(name).equals("")) {
-				Logger.i(name + " 님은   " + "아직 투표를 하지 않았습니다!" + "\n");
+			if (userVote.get(username).equals("")) {
+				Logger.i(username + " 님은   " + "아직 투표를 하지 않았습니다!" + "\n");
 				result = false;
-			} else
-				Logger.i(name + " 님은   " + userVote.get(name) + " 님께 투표하였습니다!" + "\n");
+			} else{
+				Logger.i(username + " 님은   " + userVote.get(username) + " 님께 투표하였습니다!" + "\n");
+			}
 		}
 
 		return result;
 	}
 
-	public boolean isAllChracterChoice() {
+	public boolean isAllChracterSelect() {
 
 		if (numOfChractor.get("COP") != 0){
 			if (copChoice.equals("")){return false;}
@@ -210,15 +219,12 @@ public class Play {
 		return true;
 	}
 
-	public boolean isAliveCop() {
-		return numOfChractor.get("COP") != 0;
+	public boolean isAliveCharacter(int charactorCop) {
+		return numOfChractor.get(charactorCop) != 0;
 	}
 
-	public boolean isAliveDoctor() {
-		return numOfChractor.get("DOCTOR") != 0;
-	}
 
-	public String getDiedUserByVote() {
+	public String getMaxVotedUserNm() {
 		HashMap<String, Integer> votedUser = new HashMap<>();
 		String name	= null;
 		String voted= null;
@@ -299,84 +305,203 @@ public class Play {
 		return maxuser;
 	}
 
-	public int getNumberOfChracter(String character) {
-		return numOfChractor.get(character);
-	}
-
-	public void setDied(String dieUser) {
-		/* 가장 많이 투표된 유저는 사망 */
-		userManager.getUser(dieUser).setState("die");
-
-		/* 직업별 유저 수 갱신 */
-		String dieuserCharacter = userManager.getUser(dieUser).getCharacter();
-		int num = numOfChractor.get(dieuserCharacter);
-		numOfChractor.put(dieuserCharacter, num - 1);
-	}
-
-	public String isGameOver() {
-		int numberOfMafia = numOfChractor.get("MAFIA");
-		int numberOfCop = numOfChractor.get("COP");
-		int numberOfDoctor = numOfChractor.get("DOCTOR");
-		int numberOfCivil = numOfChractor.get("CIVIL");
-		
-		Logger.i("---------------------중간 결과 -------------------\n");
-		Logger.i("마피아  " + numberOfMafia + "명 ," + "경찰 " + numberOfCop + "명, " + "의사 " + numberOfDoctor + "명 , " + "시민 " + numberOfCivil + "명 생존!!!\n");
-
-		if (numberOfMafia == 0){
-			return "MAFIALOSE";
-		}
-
-		if (numberOfMafia >= (numberOfCop + numberOfDoctor + numberOfCivil)){
-			return "MAFIAWIN";
-		}
-
-		return "NOGAMEOVER";
-	}
-
-	public void gameOver() {
-		state 		= "";
-		when 		= "";
-		wantnext 	= false;
-		numOfChractor.clear(); // 직업별 인원 배정
-		userManager.getUsers().clear();
-	}
-
-	public void endNight() {
-		copChoice 		= "";
-		doctorChoice 	= "";
-		mafiaChoice.clear();
-	}
-
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public String getWhen() {
-		return when;
-	}
-
-	public void setWhen(String when) {
-		this.when = when;
-	}
-
-	public boolean isWantnext() {
-		return wantnext;
-	}
-
-	public void setWantnext(boolean wantnext) {
-		this.wantnext = wantnext;
-	}
-
 	public String getCopChoice() {
 		return copChoice;
 	}
 
 	public String getDoctorChoice() {
 		return doctorChoice;
+	}
+
+	public int getNumberOfChracter(String character) {
+		return numOfChractor.get(character);
+	}
+
+	public void updateDieUser(String dieUserNm) {
+		/* 가장 많이 투표된 유저는 사망 */
+		setUserInfo(dieUserNm, C.STATE, C.STATE_DIE);
+
+		/* 직업별 유저 수 갱신 */
+		int dieuserCharacter = getUserInfo(dieUserNm, C.CHARACTER);
+		int num = numOfChractor.get(dieuserCharacter);
+		numOfChractor.put(dieuserCharacter, num - 1);
+	}
+
+	public int isGameOver() {
+		int numberOfMafia = numOfChractor.get(C.CHARACTOR_MAFIA);
+		int numberOfCop = numOfChractor.get(C.CHARACTOR_COP);
+		int numberOfDoctor = numOfChractor.get(C.CHARACTOR_DOCTOR);
+		int numberOfCivil = numOfChractor.get(C.CHARACTOR_CIVIL);
+		
+		Logger.i("---------------------중간 결과 -------------------\n");
+		Logger.i("마피아  " + numberOfMafia + "명 ," + "경찰 " + numberOfCop + "명, " + "의사 " + numberOfDoctor + "명 , " + "시민 " + numberOfCivil + "명 생존!!!\n");
+
+		if (numberOfMafia == 0){
+			return C.GAMEOVER_MAFIA_LOSE;
+		}
+
+		if (numberOfMafia >= (numberOfCop + numberOfDoctor + numberOfCivil)){
+			return C.GAMEOVER_MAFIA_WIN;
+		}
+
+		return C.GAMEOVER_NO;
+	}
+
+	public void gameOver() {
+		state 		= C.GAME_STATE_NULL;
+		when 		= C.GAME_WHEN_NULL;
+		wantnext 	= C.GAME_ISWANTNEXT_NULL;
+		numOfChractor.clear(); // 직업별 인원 배정
+		users = new JSONObject();
+	}
+
+	public void initSelect() {
+		copChoice 		= "";
+		doctorChoice 	= "";
+		mafiaChoice.clear();
+	}
+	
+	public boolean isAllUserReady() {
+		Boolean result = true;
+
+		Iterator<String> iter = users.keySet().iterator();
+		String username = null;
+		while(iter.hasNext()){
+			username = iter.next();
+			if ( getUserInfo(username, C.STATE) == C.STATE_READY ){
+				result = false;
+				break;
+			}
+		}
+		
+		return result;
+	}
+
+	public boolean isAllUserPlay() {
+		Boolean result = true;
+		
+		Iterator<String> iter = users.keySet().iterator();
+		String username = null;
+		while(iter.hasNext()){
+			username = iter.next();
+			if (getUserInfo(username, C.STATE) == C.STATE_PLAY){
+				result = false;
+				break;
+			}
+		}
+		
+		return result;
+	}
+
+	public boolean isAllUserWantNext() {
+		Boolean result = true;
+		
+		Iterator<String> iter = users.keySet().iterator();
+		String username = null;
+		while(iter.hasNext()){
+			username = iter.next();
+			if ((getUserInfo(username, C.ISWANTNEXT) == C.ISWANTNEXT_FALSE)
+					&& (getUserInfo(username, C.STATE) == C.STATE_PLAY)){
+				result = false;
+				break;
+			}
+		}
+		return result;
+	}
+
+	public boolean isAllUserInSunny() {
+		Boolean result = true;
+		
+		Iterator<String> iter = users.keySet().iterator();
+		String username = null;
+		while(iter.hasNext()){
+			username = iter.next();
+			if ((getUserInfo(username, C.WHEN) == C.WHEN_SUNNY) && (getUserInfo(username, C.STATE) == C.STATE_PLAY)){
+				result = false;
+				break;
+			}
+		}
+		return result;
+	}
+
+	public boolean isAllUserInNight() {
+		Boolean result = true;
+		
+		Iterator<String> iter = users.keySet().iterator();
+		String username = null;
+		while(iter.hasNext()){
+			username = iter.next();
+			if ((getUserInfo(username, C.WHEN) == C.WHEN_NIGHT) && (getUserInfo(username, C.STATE) == C.STATE_PLAY)){
+				result = false;
+				break;
+			}
+		}
+		return result;
+	}
+	
+	public JSONArray getAliveUserNms(){
+		JSONArray usernms = new JSONArray();
+		Iterator<String> iter = users.keys();
+		
+		String username = null;
+		while(iter.hasNext()){
+			username = iter.next();
+			if(this.getUserInfo(username, C.STATE) == C.STATE_PLAY){
+				usernms.put(username);
+			}
+		}
+		
+		return usernms;
+	}
+	
+	public JSONArray getUserNmsByCharacter(int charactorId) {
+		JSONArray usernms = new JSONArray();
+		
+		Iterator<String> iter = users.keySet().iterator();
+		String username = null;
+		while(iter.hasNext()){
+			username = iter.next();
+			if ((getUserInfo(username, C.CHARACTER) == charactorId) 
+					&& (getUserInfo(username, C.CHARACTER) == C.STATE_PLAY)){
+				usernms.put(username);
+			}
+		}
+		
+		return usernms;
+	}
+
+	public void addUser(String userName) {
+		User user = new User(userName);
+		users.put(userName, user);
+	}
+	
+	public void removeUser(String username){
+		users.remove(username);
+	}
+
+	public void setUserInfo(String username, String key, Object value){
+		User user = (User)users.get(username);
+		user.put(key, value);
+	}
+	
+	public int getUserInfo(String username, String key){
+		User user = (User)users.get(username);
+		return (int)user.get(key);
+	}
+	
+	public void setAllUserInfo(String key, int value) {
+		JSONArray aliveUsers = new JSONArray();
+		Iterator<String> iter = users.keys();
+		
+		String username = null;
+		while(iter.hasNext()){
+			username = iter.next();
+			setUserInfo(username, key, value);
+		}
+	}
+	
+	public String getUsersStr(){
+		return users.toString();
 	}
 
 }

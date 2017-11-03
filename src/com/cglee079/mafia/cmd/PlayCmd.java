@@ -8,6 +8,7 @@ public class PlayCmd {
     public static final String IMINNIGHT="/play IMINNIGHT";
     public static final String TIMER="/play TIMER";
     public static final String IWANTNEXT="/play IWANTNEXT";
+    public static final String IDONTWANTNEXT="/play IDONTWANTNEXT";
     public static final String STARTVOTE="/play STARTVOTE";
     public static final String GONIGHT="/play GONIGHT";
     
