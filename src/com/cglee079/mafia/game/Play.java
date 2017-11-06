@@ -13,11 +13,11 @@ import com.cglee079.mafia.network.NetworksManager;
 import com.cglee079.mafia.util.C;
 
 public class Play {
-	JSONObject users;
-	
 	private final static int MINUSER = 1;
 	private final static int MAXUSER = 8;
 
+	private JSONObject users;
+	
 	private int state;
 	private int when;
 	private int wantnext;
