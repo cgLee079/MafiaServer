@@ -12,14 +12,14 @@ import com.cglee079.mafia.model.User;
 
 public class ClientConnector extends Thread {
 	private MySocket mySocket;
-	private Socket soc; // 연결소켓
+	private Socket socket; // 연결소켓
 	private ServerSocket serversocket;
-	private NetworksManager networksManager; // 연결된 사용자를 저장할 벡터
+	private NetworkManager networkManager; // 연결된 사용자를 저장할 벡터
 	private Play play;
 	
 	public ClientConnector(){
-		networksManager = new NetworksManager();
-		play		= new Play(networksManager);
+		networkManager = new NetworkManager();
+		play			= new Play(networkManager);
 	}
 	
 	public ClientConnector(ServerSocket socket) {
@@ -33,10 +33,10 @@ public class ClientConnector extends Thread {
 			try {
 				Logger.i("\n");
 				Logger.i("---------------User waiting----------------\n");
-				soc = serversocket.accept();
+				socket = serversocket.accept();
 				Logger.i(">>>> User Connect!!\n");
-				this.mySocket = new MySocket(soc);
-				new MyNetwork(mySocket, networksManager, play).start();
+				this.mySocket = new MySocket(socket);
+				new MyNetwork(mySocket, networkManager, play).start();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -31,8 +31,7 @@ public class MySocket {
 	}
 
 	public JSONObject readJSON() throws ClassNotFoundException, IOException, EOFException {
-		return new org.json.JSONObject(ois.readUTF());
-
+		return new JSONObject(ois.readUTF());
 	}
 
 	public void close() throws IOException {

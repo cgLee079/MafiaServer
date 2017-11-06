@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 import com.cglee079.mafia.log.Logger;
 import com.cglee079.mafia.model.User;
-import com.cglee079.mafia.network.NetworksManager;
+import com.cglee079.mafia.network.NetworkManager;
 import com.cglee079.mafia.util.C;
 
 public class Play {
@@ -30,7 +30,7 @@ public class Play {
 	private String copChoice 	= "";
 	private String doctorChoice = "";
 
-	private NetworksManager userManager;
+	private NetworkManager userManager;
 
 	public Play(){
 		chractorOfUserSize 	= new HashMap<>();
@@ -48,7 +48,7 @@ public class Play {
 		chractorOfUserSize.put(8, new Integer[] { 3, 1, 1, 3 });
 	}
 	
-	public Play(NetworksManager userManager) {
+	public Play(NetworkManager userManager) {
 		this();
 		this.userManager = userManager;
 	}

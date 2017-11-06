@@ -21,11 +21,11 @@ import com.cglee079.mafia.util.C;
 public class MyNetwork extends Thread {
 	private Thread rcvMsgThd;
 	private MySocket mySocket;
-	private NetworksManager networkManager;
+	private NetworkManager networkManager;
 	private String myName;
 	private Play play;
 
-	public MyNetwork(MySocket mySocket, NetworksManager networkManager, Play play) {
+	public MyNetwork(MySocket mySocket, NetworkManager networkManager, Play play) {
 		this.mySocket 			= mySocket;
 		this.networkManager		= networkManager;
 		this.play 				= play;
@@ -127,10 +127,9 @@ public class MyNetwork extends Thread {
 
 	///// *받은 데이터의 , 로직 구현*/
 	private void rcvMsgExcute(String rcvCmd, Object rcvMsg) throws IOException {
-		User user;
 		String votedUserNm;
 		String selectedUserNm;
-		JSONObject chat = new JSONObject();
+		JSONObject chat;
 		
 		switch (rcvCmd) {
 
@@ -531,24 +530,28 @@ public class MyNetwork extends Thread {
 
 		/* 유저 채팅을 보냄 */
 		case ChatCmd.SENDMESSAGE:
+			chat = new JSONObject();
 			chat.put("name", myName);
 			chat.put("txt", rcvMsg);
 			sndMsg_ToTargets(play.getAliveUserNms(), ChatCmd.SENDMESSAGE, chat);
 			break;
 
 		case ChatCmd.SENDEMOTICON:
+			chat = new JSONObject();
 			chat.put("name", myName);
 			chat.put("txt", rcvMsg);
 			sndMsg_ToTargets(play.getAliveUserNms(), ChatCmd.SENDEMOTICON, chat);
 			break;
 
 		case HiddenChatCmd.SENDMESSAGE:
+			chat = new JSONObject();
 			chat.put("name", myName);
 			chat.put("txt", rcvMsg);
 			sndMsg_ToTargets(play.getAliveUserNms(), HiddenChatCmd.SENDMESSAGE, chat);
 			break;
 
 		case HiddenChatCmd.SENDEMOTICON:
+			chat = new JSONObject();
 			chat.put("name", myName);
 			chat.put("txt", rcvMsg);
 			sndMsg_ToTargets(play.getAliveUserNms(), HiddenChatCmd.SENDEMOTICON, chat);

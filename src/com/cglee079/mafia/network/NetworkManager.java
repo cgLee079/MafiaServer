@@ -2,10 +2,10 @@ package com.cglee079.mafia.network;
 
 import org.json.JSONObject;
 
-public class NetworksManager {
+public class NetworkManager {
 	private JSONObject userNetworks;
 
-	public NetworksManager() {
+	public NetworkManager() {
 		userNetworks = new JSONObject();
 	}
 
