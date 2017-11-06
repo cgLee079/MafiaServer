@@ -31,16 +31,16 @@ public class C{
 	public static final int GAME_STATE_READY 	= 1102;
 	public static final int GAME_STATE_PLAY 	= 1103;
 	
-	public static final int GAME_WHEN_NULL 	= 1200;
-	public static final int GAME_WHEN_SUNNY = 1201;
-	public static final int GAME_WHEN_NIGHT = 1202;
+	public static final int GAME_WHEN_NULL 		= 1200;
+	public static final int GAME_WHEN_SUNNY 	= 1201;
+	public static final int GAME_WHEN_NIGHT 	= 1202;
 	
 	public static final int GAME_ISWANTNEXT_NULL 	= 300;
 	public static final int GAME_ISWANTNEXT_TRUE 	= 301;
 	public static final int GAME_ISWANTNEXT_FALSE 	= 302;
 	
-	public static final int GAMEOVER_MAFIA_WIN= 1201;
-	public static final int GAMEOVER_MAFIA_LOSE = 1201;
-	public static final int GAMEOVER_NO = 1201;
+	public static final int GAMEOVER_MAFIA_WIN		= 1201;
+	public static final int GAMEOVER_MAFIA_LOSE 	= 1201;
+	public static final int GAMEOVER_NO				= 1201;
 	
 }

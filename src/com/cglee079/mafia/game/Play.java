@@ -30,8 +30,6 @@ public class Play {
 	private String copChoice 	= "";
 	private String doctorChoice = "";
 
-	private NetworkManager userManager;
-
 	public Play(){
 		chractorOfUserSize 	= new HashMap<>();
 		numOfChractor 		= new HashMap<>();
@@ -47,94 +45,17 @@ public class Play {
 		chractorOfUserSize.put(7, new Integer[] { 2, 1, 1, 3 });
 		chractorOfUserSize.put(8, new Integer[] { 3, 1, 1, 3 });
 	}
-	
-	public Play(NetworkManager userManager) {
-		this();
-		this.userManager = userManager;
-	}
-	
-	public int getState() {
-		return state;
-	}
 
 	public void setState(int state) {
 		this.state = state;
-	}
-
-	public int getWhen() {
-		return when;
 	}
 
 	public void setWhen(int when) {
 		this.when = when;
 	}
 
-	public int getWantnext() {
-		return wantnext;
-	}
-
 	public void setWantnext(int wantnext) {
 		this.wantnext = wantnext;
-	}
-
-	public boolean isInsizeUserNum() {
-		int size = users.length();
-		if (size >= MINUSER && size <= MAXUSER) { return true; }
-		return false;
-	}
-
-	public boolean updateCharacter() {
-		int length = users.length();
-		Integer[] characterDivision = chractorOfUserSize.get(length);
-
-		int numOfMafias = 0;
-		int numOfCops 	= 0;
-		int numOfDoctors= 0;
-		int numOfCivils = 0;
-
-		int maxOfMafias = characterDivision[0];
-		int maxOfCops 	= characterDivision[1];
-		int maxOfDoctors= characterDivision[2];
-		int maxOfCivils = characterDivision[3];
-
-		Iterator<String> iter = users.keys();
-		while(iter.hasNext()){
-			String username = users.getString(iter.next());
-			while (true) {
-				int random = (int) (Math.random() * 4);
-				if (random == 0 && numOfMafias < maxOfMafias) {
-					setUserInfo(username, C.CHARACTER, C.CHARACTOR_MAFIA);
-					numOfMafias++;
-					break;
-				}
-
-				else if (random == 1 && numOfCops < maxOfCops) {
-					setUserInfo(username, C.CHARACTER, C.CHARACTOR_COP);
-					numOfCops++;
-					break;
-				}
-
-				else if (random == 2 && numOfDoctors < maxOfDoctors) {
-					setUserInfo(username, C.CHARACTER, C.CHARACTOR_DOCTOR);
-					numOfDoctors++;
-					break;
-				}
-
-				else if (random == 3 && numOfCivils < maxOfCivils) {
-					setUserInfo(username, C.CHARACTER, C.CHARACTOR_CIVIL);
-					numOfCivils++;
-					break;
-				}
-			}
-		}
-		
-		numOfChractor.put(C.CHARACTOR_MAFIA, numOfMafias);
-		numOfChractor.put(C.CHARACTOR_COP, numOfCops);
-		numOfChractor.put(C.CHARACTOR_DOCTOR, numOfDoctors);
-		numOfChractor.put(C.CHARACTOR_CIVIL, numOfCivils);
-
-		return true;
-
 	}
 
 	public void initVote() {
@@ -179,50 +100,6 @@ public class Play {
 	public void updateDoctorSelect(String name, String choice) {
 		doctorChoice = choice;
 	}
-
-	public boolean isAllUserVote() {
-		boolean result 			= true;
-		Set<String> set 		= userVote.keySet();
-		Iterator<String> iter 	= set.iterator();
-		
-		Logger.i("--------------투표 중간결과 -----------------------\n");
-		while (iter.hasNext()) {
-			String username = iter.next();
-
-			if (userVote.get(username).equals("")) {
-				Logger.i(username + " 님은   " + "아직 투표를 하지 않았습니다!" + "\n");
-				result = false;
-			} else{
-				Logger.i(username + " 님은   " + userVote.get(username) + " 님께 투표하였습니다!" + "\n");
-			}
-		}
-
-		return result;
-	}
-
-	public boolean isAllChracterSelect() {
-
-		if (numOfChractor.get("COP") != 0){
-			if (copChoice.equals("")){return false;}
-		}
-		
-		if (numOfChractor.get("DOCTOR") != 0){
-			if (doctorChoice.equals("")){ return false;}
-		}
-		
-		Iterator iter = mafiaChoice.keySet().iterator();
-		while (iter.hasNext()) {
-			if (mafiaChoice.get(iter.next()).equals(""))
-				return false;
-		}
-
-		return true;
-	}
-
-	public boolean isAliveCharacter(int charactorCop) {
-		return numOfChractor.get(charactorCop) != 0;
-	}
-
 
 	public String getMaxVotedUserNm() {
 		HashMap<String, Integer> votedUser = new HashMap<>();
@@ -327,6 +204,65 @@ public class Play {
 		numOfChractor.put(dieuserCharacter, num - 1);
 	}
 
+	public void initSelect() {
+		copChoice 		= "";
+		doctorChoice 	= "";
+		mafiaChoice.clear();
+	}
+	
+	public boolean updateCharacter() {
+		int length = users.length();
+		Integer[] characterDivision = chractorOfUserSize.get(length);
+
+		int numOfMafias = 0;
+		int numOfCops 	= 0;
+		int numOfDoctors= 0;
+		int numOfCivils = 0;
+
+		int maxOfMafias = characterDivision[0];
+		int maxOfCops 	= characterDivision[1];
+		int maxOfDoctors= characterDivision[2];
+		int maxOfCivils = characterDivision[3];
+
+		Iterator<String> iter = users.keys();
+		while(iter.hasNext()){
+			String username = users.getString(iter.next());
+			while (true) {
+				int random = (int) (Math.random() * 4);
+				if (random == 0 && numOfMafias < maxOfMafias) {
+					setUserInfo(username, C.CHARACTER, C.CHARACTOR_MAFIA);
+					numOfMafias++;
+					break;
+				}
+
+				else if (random == 1 && numOfCops < maxOfCops) {
+					setUserInfo(username, C.CHARACTER, C.CHARACTOR_COP);
+					numOfCops++;
+					break;
+				}
+
+				else if (random == 2 && numOfDoctors < maxOfDoctors) {
+					setUserInfo(username, C.CHARACTER, C.CHARACTOR_DOCTOR);
+					numOfDoctors++;
+					break;
+				}
+
+				else if (random == 3 && numOfCivils < maxOfCivils) {
+					setUserInfo(username, C.CHARACTER, C.CHARACTOR_CIVIL);
+					numOfCivils++;
+					break;
+				}
+			}
+		}
+		
+		numOfChractor.put(C.CHARACTOR_MAFIA, numOfMafias);
+		numOfChractor.put(C.CHARACTOR_COP, numOfCops);
+		numOfChractor.put(C.CHARACTOR_DOCTOR, numOfDoctors);
+		numOfChractor.put(C.CHARACTOR_CIVIL, numOfCivils);
+
+		return true;
+	}
+	
 	public int isGameOver() {
 		int numberOfMafia = numOfChractor.get(C.CHARACTOR_MAFIA);
 		int numberOfCop = numOfChractor.get(C.CHARACTOR_COP);
@@ -346,7 +282,7 @@ public class Play {
 
 		return C.GAMEOVER_NO;
 	}
-
+	
 	public void gameOver() {
 		state 		= C.GAME_STATE_NULL;
 		when 		= C.GAME_WHEN_NULL;
@@ -354,14 +290,88 @@ public class Play {
 		numOfChractor.clear(); // 직업별 인원 배정
 		users = new JSONObject();
 	}
-
-	public void initSelect() {
-		copChoice 		= "";
-		doctorChoice 	= "";
-		mafiaChoice.clear();
+	
+	public void setAllUserInfo(String key, int value) {
+		Iterator<String> iter = users.keys();
+		
+		String username = null;
+		while(iter.hasNext()){
+			username = iter.next();
+			setUserInfo(username, key, value);
+		}
 	}
 	
-	public boolean isAllUserReady() {
+	/**** Need Sync  ****/
+	public synchronized int getState() {
+		return state;
+	}
+	
+	public synchronized int getWhen() {
+		return when;
+	}
+	
+	public synchronized int getWantnext() {
+		return wantnext;
+	}
+	
+	public synchronized void addUser(String userName) {
+		User user = new User(userName);
+		users.put(userName, user);
+	}
+	
+	public synchronized void removeUser(String username){
+		users.remove(username);
+	}
+	
+	public synchronized boolean isInsizeUserNum() {
+		int size = users.length();
+		if (size >= MINUSER && size <= MAXUSER) { return true; }
+		return false;
+	}
+
+	public synchronized boolean isAllUserVote() {
+		boolean result 			= true;
+		Set<String> set 		= userVote.keySet();
+		Iterator<String> iter 	= set.iterator();
+		
+		Logger.i("--------------투표 중간결과 -----------------------\n");
+		while (iter.hasNext()) {
+			String username = iter.next();
+
+			if (userVote.get(username).equals("")) {
+				Logger.i(username + " 님은   " + "아직 투표를 하지 않았습니다!" + "\n");
+				result = false;
+			} else{
+				Logger.i(username + " 님은   " + userVote.get(username) + " 님께 투표하였습니다!" + "\n");
+			}
+		}
+
+		return result;
+	}
+	
+	public synchronized boolean isAllChracterSelect() {
+		if (numOfChractor.get("COP") != 0){
+			if (copChoice.equals("")){return false;}
+		}
+		
+		if (numOfChractor.get("DOCTOR") != 0){
+			if (doctorChoice.equals("")){ return false;}
+		}
+		
+		Iterator<String> iter = mafiaChoice.keySet().iterator();
+		while (iter.hasNext()) {
+			if (mafiaChoice.get(iter.next()).equals(""))
+				return false;
+		}
+
+		return true;
+	}
+
+	public synchronized boolean isAliveCharacter(int charactorCop) {
+		return numOfChractor.get(charactorCop) != 0;
+	}
+
+	public synchronized boolean isAllUserReady() {
 		Boolean result = true;
 
 		Iterator<String> iter = users.keySet().iterator();
@@ -377,7 +387,7 @@ public class Play {
 		return result;
 	}
 
-	public boolean isAllUserPlay() {
+	public synchronized boolean isAllUserPlay() {
 		Boolean result = true;
 		
 		Iterator<String> iter = users.keySet().iterator();
@@ -393,7 +403,7 @@ public class Play {
 		return result;
 	}
 
-	public boolean isAllUserWantNext() {
+	public synchronized boolean isAllUserWantNext() {
 		Boolean result = true;
 		
 		Iterator<String> iter = users.keySet().iterator();
@@ -409,7 +419,7 @@ public class Play {
 		return result;
 	}
 
-	public boolean isAllUserInSunny() {
+	public synchronized boolean isAllUserInSunny() {
 		Boolean result = true;
 		
 		Iterator<String> iter = users.keySet().iterator();
@@ -424,7 +434,7 @@ public class Play {
 		return result;
 	}
 
-	public boolean isAllUserInNight() {
+	public synchronized boolean isAllUserInNight() {
 		Boolean result = true;
 		
 		Iterator<String> iter = users.keySet().iterator();
@@ -439,7 +449,21 @@ public class Play {
 		return result;
 	}
 	
-	public JSONArray getAliveUserNms(){
+	public synchronized void setUserInfo(String username, String key, Object value){
+		User user = (User)users.get(username);
+		user.put(key, value);
+	}
+	
+	public synchronized int getUserInfo(String username, String key){
+		User user = (User)users.get(username);
+		return (int)user.get(key);
+	}
+	
+	public synchronized String getUsersStr(){
+		return users.toString();
+	}
+	
+	public synchronized JSONArray getAliveUserNms(){
 		JSONArray usernms = new JSONArray();
 		Iterator<String> iter = users.keys();
 		
@@ -454,7 +478,7 @@ public class Play {
 		return usernms;
 	}
 	
-	public JSONArray getUserNmsByCharacter(int charactorId) {
+	public synchronized JSONArray getUserNmsByCharacter(int charactorId) {
 		JSONArray usernms = new JSONArray();
 		
 		Iterator<String> iter = users.keySet().iterator();
@@ -468,40 +492,6 @@ public class Play {
 		}
 		
 		return usernms;
-	}
-
-	public void addUser(String userName) {
-		User user = new User(userName);
-		users.put(userName, user);
-	}
-	
-	public void removeUser(String username){
-		users.remove(username);
-	}
-
-	public void setUserInfo(String username, String key, Object value){
-		User user = (User)users.get(username);
-		user.put(key, value);
-	}
-	
-	public int getUserInfo(String username, String key){
-		User user = (User)users.get(username);
-		return (int)user.get(key);
-	}
-	
-	public void setAllUserInfo(String key, int value) {
-		JSONArray aliveUsers = new JSONArray();
-		Iterator<String> iter = users.keys();
-		
-		String username = null;
-		while(iter.hasNext()){
-			username = iter.next();
-			setUserInfo(username, key, value);
-		}
-	}
-	
-	public String getUsersStr(){
-		return users.toString();
 	}
 
 }

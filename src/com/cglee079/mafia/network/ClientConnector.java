@@ -18,8 +18,8 @@ public class ClientConnector extends Thread {
 	private Play play;
 	
 	public ClientConnector(){
-		networkManager = new NetworkManager();
-		play			= new Play(networkManager);
+		networkManager 	= new NetworkManager();
+		play			= new Play();
 	}
 	
 	public ClientConnector(ServerSocket socket) {
