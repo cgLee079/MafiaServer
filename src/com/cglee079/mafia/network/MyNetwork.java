@@ -46,7 +46,7 @@ public class MyNetwork extends Thread {
 		}
 	}
 
-	public void broadcast(String sndCmd, String sndNm, Object sndMsg) {
+	public void broadcast(String sndCmd, Object sndMsg) {
 			JSONObject networks = networkManager.getUserNetworks();
 			MyNetwork network = null;
 			
@@ -109,7 +109,7 @@ public class MyNetwork extends Thread {
 						mySocket.close();
 						networkManager.removeUserNetwork(myName);
 						
-						broadcast(Cmd.USERUPDATE, "server", play.getUsersStr());
+						broadcast(Cmd.USERUPDATE, play.getUsersStr());
 						
 //						Logger.i(networksManager.size() + " : 현재 벡터에 담겨진 사용자 수\n");
 						Logger.i("사용자 접속 끊어짐 자원 반납\n");
@@ -158,20 +158,20 @@ public class MyNetwork extends Thread {
 
 		//// * 유저 대기실로 입장 */
 		case WaitCmd.IMWAITACTIVITY:
-			broadcast(WaitCmd.NOTICE, "", myName + " 님이 입장하셨습니다!");
+			broadcast(WaitCmd.NOTICE, myName + " 님이 입장하셨습니다!");
 			break;
 			
 		case WaitCmd.IMWAIT:
 			play.setUserInfo(myName, C.STATE, C.STATE_WAIT);
-			broadcast(WaitCmd.NOTICE, "", myName + " 님 WAIT!!");
-			broadcast(Cmd.USERUPDATE, "", play.getUsersStr());
+			broadcast(WaitCmd.NOTICE, myName + " 님 WAIT!!");
+			broadcast(Cmd.USERUPDATE, play.getUsersStr());
 			break;
 
 		//// * 유저 레디 */
 		case WaitCmd.IMREADY:
 			play.setUserInfo(myName, C.STATE, C.STATE_READY);
-			broadcast(WaitCmd.NOTICE, "", myName + " 님 READY!!");
-			broadcast(Cmd.USERUPDATE, "", play.getUsersStr());
+			broadcast(WaitCmd.NOTICE, myName + " 님 READY!!");
+			broadcast(Cmd.USERUPDATE, play.getUsersStr());
 
 			/* 모든 유저가 레디 상태인지 확인, 게임 상태 변경 */
 			if (play.isAllUserReady()) { 
@@ -189,7 +189,7 @@ public class MyNetwork extends Thread {
 						int count = 5;
 						while ((count > 0) && ( play.getState() == C.GAME_STATE_READY ) && play.isInsizeUserNum()) {
 							count--;
-							broadcast(WaitCmd.NOTICE, "", "Count..." + count);
+							broadcast(WaitCmd.NOTICE, "Count..." + count);
 							try {
 								Thread.sleep(1000);
 							} catch (InterruptedException e) {
@@ -200,7 +200,7 @@ public class MyNetwork extends Thread {
 						/* 카운트 다운이 정상적으로 끝날경우, 게임을 시작함 */
 						if (count == 0) {
 							Logger.i("---- GAME START-------\n");
-							broadcast(WaitCmd.NOTICE, "", "게임 스타트!!!!");
+							broadcast(WaitCmd.NOTICE, "게임 스타트!!!!");
 
 							/* 유저들에게 직업을 부여함 */
 							if (play.updateCharacter()){
@@ -208,10 +208,10 @@ public class MyNetwork extends Thread {
 							}
 
 							/* 요저 정보 갱신을 요청함 */
-							broadcast(Cmd.USERUPDATE, "", play.getUsersStr());
+							broadcast(Cmd.USERUPDATE, play.getUsersStr());
 
 							/* 게임을 시작 하기를 요청함 */
-							broadcast(WaitCmd.STARTGAME, "", "");
+							broadcast(WaitCmd.STARTGAME, "");
 
 						}
 
@@ -234,7 +234,7 @@ public class MyNetwork extends Thread {
 
 			/* 모든 유저가 게임 을 시작했다면, 직업별 직업 공지 */
 			if (play.getState() == C.GAME_STATE_PLAY) {
-				broadcast(Cmd.USERUPDATE, "", play.getUsersStr());
+				broadcast(Cmd.USERUPDATE, play.getUsersStr());
 				
 				sndMsg_ToTargets(play.getAliveUserNms(), PlayCmd.NOTICE, "게임이 시작 되었습니다");
 				sndMsg_ToTargets(play.getAliveUserNms(), PlayCmd.IMPOTANTNOTICE,
@@ -255,7 +255,7 @@ public class MyNetwork extends Thread {
 		case PlayCmd.IMINSUNNY:
 			play.setUserInfo(myName, C.WHEN, C.WHEN_SUNNY);
 			play.setUserInfo(myName, C.ISWANTNEXT, C.ISWANTNEXT_FALSE);
-			broadcast(Cmd.USERUPDATE, "", play.getUsersStr());
+			broadcast(Cmd.USERUPDATE, play.getUsersStr());
 			
 //			for (int i = 0; i < play.size(); i++) {
 //				Logger.i("WHEN " + play.getUser(i).getName() + play.getUser(i).getWhen() + "\n");
@@ -309,14 +309,14 @@ public class MyNetwork extends Thread {
 		case PlayCmd.IDONTWANTNEXT:
 			play.setUserInfo(myName, C.ISWANTNEXT, C.ISWANTNEXT_FALSE);
 			sndMsg_ToTargets(play.getAliveUserNms(), PlayCmd.NOTICE, myName + "님이 밤으로 가길 원하지 않습니다.");
-			broadcast(Cmd.USERUPDATE, "", play.getUsersStr());
+			broadcast(Cmd.USERUPDATE, play.getUsersStr());
 			break;
 			
 		//// * 유저 다음 턴으로 가기를 원함 */
 		case PlayCmd.IWANTNEXT:
 			play.setUserInfo(myName, C.ISWANTNEXT, C.ISWANTNEXT_TRUE);
 			sndMsg_ToTargets(play.getAliveUserNms(), PlayCmd.NOTICE, myName + "님이 밤으로 가길 원합니다.");
-			broadcast(Cmd.USERUPDATE, "", play.getUsersStr());
+			broadcast(Cmd.USERUPDATE, play.getUsersStr());
 			
 			/* 모든 유저가 밤으로 가기를 원할경우 */
 			if (play.isAllUserWantNext()){
@@ -374,7 +374,7 @@ public class MyNetwork extends Thread {
 				play.updateDieUser(dieUserNm);
 
 				/* 유저 정보 갱신, 사망자 공지 */
-				broadcast(Cmd.USERUPDATE, "server", play.getUsersStr());
+				broadcast(Cmd.USERUPDATE, play.getUsersStr());
 				sndMsg_ToTargets(play.getAliveUserNms(), PlayCmd.IMPOTANTNOTICE, dieUserNm + "님이 투표로 처형 되었습니다.");
 				sndMsg_ToTarget(dieUserNm, PlayCmd.IMPOTANTNOTICE, "당신은 사망하였습니다.");
 				sndMsg_ToTarget(dieUserNm, PlayCmd.YOUAREDIE, "");
@@ -388,8 +388,8 @@ public class MyNetwork extends Thread {
 				if (!(gameover == C.GAMEOVER_NO)) { //게임 종료
 					Logger.i("--------------------게임 종료 -----------------\n");
 					
-					broadcast(Cmd.USERUPDATE, "server", play.getUsersStr());
-					broadcast(PlayCmd.GAMEOVER, "server", gameover);
+					broadcast(Cmd.USERUPDATE, play.getUsersStr());
+					broadcast(PlayCmd.GAMEOVER, gameover);
 					
 					play.gameOver();
 					break;
@@ -433,7 +433,7 @@ public class MyNetwork extends Thread {
 			play.setUserInfo(myName, C.WHEN, C.WHEN_NIGHT);
 			
 			if (play.isAllUserInNight()) {
-				broadcast(Cmd.USERUPDATE, "server", play.getUsersStr());
+				broadcast(Cmd.USERUPDATE, play.getUsersStr());
 				//##모든유저가 밤이니까 투푤르 시작하라고 보내야.
 				Logger.i("--------------모든 유저가 밤에 있습니다----------- \n");
 				play.setWhen(C.GAME_WHEN_NIGHT);
@@ -504,7 +504,7 @@ public class MyNetwork extends Thread {
 				int gameover = play.isGameOver();
 				if (!(gameover == C.GAMEOVER_NO)) {
 					Logger.i("--------------------게임 종료 -----------------\n");
-					broadcast(PlayCmd.GAMEOVER, "server", gameover);
+					broadcast(PlayCmd.GAMEOVER, gameover);
 					play.gameOver();
 					break;
 				}
@@ -516,7 +516,7 @@ public class MyNetwork extends Thread {
 				play.setWantnext(C.GAME_ISWANTNEXT_NULL); /* 밤이 다음 턴으로가는 지 여부 초기화 시킴 */
 				play.setWhen(C.GAME_WHEN_NULL);
 
-				broadcast(Cmd.USERUPDATE, "server", play.getUsersStr());
+				broadcast(Cmd.USERUPDATE, play.getUsersStr());
 				
 				/* 밤이 끝나고 모든 유저에게 아침으로 가기를, 요청함 */
 				sndMsg_ToTargets(play.getAliveUserNms(), PlayCmd.GOSUNNY, "");
@@ -526,7 +526,7 @@ public class MyNetwork extends Thread {
 
 		case GameoverCmd.REGAME:
 			play.addUser(myName);
-			broadcast(Cmd.USERUPDATE, "", play.getUsersStr());
+			broadcast(Cmd.USERUPDATE, play.getUsersStr());
 			break;
 
 		/* 유저 채팅을 보냄 */
